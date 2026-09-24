@@ -1,0 +1,63 @@
+import { groq } from "@ai-sdk/groq";
+import { openai } from "@ai-sdk/openai";
+import { embed, streamText } from "ai";
+import { db } from "../db";
+import { RAG } from "@/lib/constants";
+
+// Groq has no embedding API — OpenAI embeddings are kept for vector search.
+const embedder = openai.embedding(process.env.EMBEDDING_MODEL ?? "text-embedding-3-small");
+
+export type Citation = { sourceId: string; title: string };
+
+type Retrieved = { content: string; sourceId: string; title: string; score: number };
+
+export async function retrieve(chatbotId: string, query: string): Promise<Retrieved[]> {
+  const { embedding } = await embed({ model: embedder, value: query });
+  const vec = JSON.stringify(embedding);
+  const rows = await db.$queryRaw<Retrieved[]>`
+    SELECT c.content, c."sourceId", s.title, 1 - (c.embedding <=> ${vec}::vector) AS score
+    FROM "Chunk" c
+    JOIN "Source" s ON s.id = c."sourceId"
+    WHERE c."chatbotId" = ${chatbotId} AND s.status = 'READY'
+    ORDER BY c.embedding <=> ${vec}::vector
+    LIMIT ${RAG.topK}`;
+  return rows.filter((r) => r.score >= RAG.minScore);
+}
+
+export function buildContext(rows: Retrieved[]) {
+  let used = 0;
+  const parts: string[] = [];
+  const citations: Citation[] = [];
+  for (const r of rows) {
+    if (used + r.content.length > RAG.maxContextChars) break;
+    parts.push(`[${r.title}]\n${r.content}`);
+    used += r.content.length;
+    if (!citations.some((c) => c.sourceId === r.sourceId))
+      citations.push({ sourceId: r.sourceId, title: r.title });
+  }
+  return { context: parts.join("\n\n---\n\n"), citations };
+}
+
+export async function answer(
+  bot: { id: string; systemPrompt: string; model: string; temperature: number },
+  history: { role: "user" | "assistant"; content: string }[],
+) {
+  const question = history.at(-1)?.content ?? "";
+  const rows = await retrieve(bot.id, question);
+  const { context, citations } = buildContext(rows);
+
+  const result = streamText({
+    model: groq(bot.model),
+    temperature: bot.temperature,
+    maxOutputTokens: 700,
+    system: `${bot.systemPrompt}
+
+Use only the context below. If it does not contain the answer, say you don't have that information and suggest contacting the team. Keep answers under six sentences. Never mention that you were given context.
+
+Context:
+${context || "(no matching documents)"}`,
+    messages: history,
+  });
+
+  return { result, citations, grounded: rows.length > 0 };
+}

@@ -1,0 +1,236 @@
+// Prisma schema for Chatline
+// PostgreSQL + pgvector required.
+// Run: CREATE EXTENSION IF NOT EXISTS vector;
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "driverAdapters"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+// ---------------------------------------------------------------------------
+// better-auth core models
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String   @id
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions     Session[]
+  accounts     Account[]
+  chatbots     Chatbot[]
+  subscription Subscription?
+  usage        UsageCounter[]
+  apiKeys      ApiKey[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// Billing
+// ---------------------------------------------------------------------------
+
+model Subscription {
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  plan               String    @default("free")
+  status             String    @default("ACTIVE") // ACTIVE | CANCELLED | PAST_DUE
+  razorpayCustomerId String?
+  razorpaySubId      String?
+  currentPeriodEnd   DateTime?
+  cancelAtPeriodEnd  Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// Chatbots
+// ---------------------------------------------------------------------------
+
+model Chatbot {
+  id             String   @id @default(cuid())
+  ownerId        String
+  name           String
+  status         String   @default("DRAFT") // DRAFT | LIVE | PAUSED
+  systemPrompt   String   @default("You are a helpful assistant.") @db.Text
+  model          String   @default("llama-3.3-70b-versatile")
+  temperature    Float    @default(0.3)
+  greeting       String   @default("Hi! How can I help you today?")
+  accent         String   @default("#6366f1")
+  themeMode      String   @default("system") // system | light | dark
+  position       String   @default("right") // left | right
+  allowedDomains String[]
+  rateLimitRpm   Int      @default(20)
+  collectEmail   Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  owner         User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  sources       Source[]
+  conversations Conversation[]
+}
+
+// ---------------------------------------------------------------------------
+// Knowledge Sources
+// ---------------------------------------------------------------------------
+
+model Source {
+  id        String   @id @default(cuid())
+  chatbotId String
+  type      String // FILE | URL | TEXT | FAQ
+  title     String
+  location  String   @db.Text
+  bytes     Int      @default(0)
+  tokens    Int      @default(0)
+  status    String   @default("QUEUED") // QUEUED | PROCESSING | READY | FAILED
+  error     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  chunks  Chunk[]
+}
+
+// Chunk.embedding is a pgvector column — created via raw SQL migration.
+// ALTER TABLE "Chunk" ADD COLUMN embedding vector(1536);
+
+model Chunk {
+  id        String @id @default(cuid())
+  sourceId  String
+  chatbotId String
+  content   String @db.Text
+  tokens    Int    @default(0)
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// Conversations & Messages
+// ---------------------------------------------------------------------------
+
+model Conversation {
+  id          String   @id @default(cuid())
+  chatbotId   String
+  visitorId   String
+  origin      String   @default("")
+  visitorMail String?
+  rating      Float?
+  lastAt      DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  chatbot  Chatbot   @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String // user | assistant
+  content        String   @db.Text
+  citations      Json?
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+// ---------------------------------------------------------------------------
+// Payments & Usage
+// ---------------------------------------------------------------------------
+
+model PaymentEvent {
+  id        String   @id @default(cuid())
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
+/// One row per user per calendar month (e.g. "2026-09").
+
+model UsageCounter {
+  id       String @id @default(cuid())
+  userId   String
+  period   String
+  messages Int    @default(0)
+  storedMb Float  @default(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, period])
+}
+
+// ---------------------------------------------------------------------------
+// API Keys
+// ---------------------------------------------------------------------------
+
+model ApiKey {
+  id        String    @id @default(cuid())
+  userId    String
+  name      String
+  prefix    String
+  hash      String    @unique
+  lastUsed  DateTime?
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
