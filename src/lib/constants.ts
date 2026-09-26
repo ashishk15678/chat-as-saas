@@ -28,7 +28,12 @@ export const PLANS: Record<PlanId, Plan> = {
     messages: 100,
     storageMb: 10,
     seats: 1,
-    perks: ["1 chatbot", "100 messages a month", "10 MB of sources", "Chatline badge on the widget"],
+    perks: [
+      "1 chatbot",
+      "100 messages a month",
+      "10 MB of sources",
+      "Chatline badge on the widget",
+    ],
   },
   starter: {
     id: "starter",
@@ -38,7 +43,13 @@ export const PLANS: Record<PlanId, Plan> = {
     messages: 3_000,
     storageMb: 200,
     seats: 2,
-    perks: ["3 chatbots", "3,000 messages a month", "200 MB of sources", "Remove the badge", "Email support"],
+    perks: [
+      "3 chatbots",
+      "3,000 messages a month",
+      "200 MB of sources",
+      "Remove the badge",
+      "Email support",
+    ],
     razorpayPlanId: process.env.RAZORPAY_PLAN_STARTER,
   },
   growth: {
@@ -49,7 +60,13 @@ export const PLANS: Record<PlanId, Plan> = {
     messages: 15_000,
     storageMb: 2_000,
     seats: 5,
-    perks: ["10 chatbots", "15,000 messages a month", "2 GB of sources", "Website crawling", "Conversation export"],
+    perks: [
+      "10 chatbots",
+      "15,000 messages a month",
+      "2 GB of sources",
+      "Website crawling",
+      "Conversation export",
+    ],
     razorpayPlanId: process.env.RAZORPAY_PLAN_GROWTH,
   },
   scale: {
@@ -60,7 +77,13 @@ export const PLANS: Record<PlanId, Plan> = {
     messages: 100_000,
     storageMb: 20_000,
     seats: 25,
-    perks: ["50 chatbots", "100,000 messages a month", "20 GB of sources", "Bring your own model key", "99.9% uptime terms"],
+    perks: [
+      "50 chatbots",
+      "100,000 messages a month",
+      "20 GB of sources",
+      "Bring your own model key",
+      "99.9% uptime terms",
+    ],
     razorpayPlanId: process.env.RAZORPAY_PLAN_SCALE,
   },
 };
@@ -74,7 +97,8 @@ export const UPLOAD = {
     "text/plain": ".txt",
     "text/markdown": ".md",
     "text/csv": ".csv",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      ".docx",
   } as Record<string, string>,
 };
 

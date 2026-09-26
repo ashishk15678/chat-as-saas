@@ -30,7 +30,17 @@ function loadSdk() {
  * Checkout runs entirely against ids minted on our server, so the price can
  * never be tampered with in the browser. The webhook is what finally grants access.
  */
-export function CheckoutButton({ plan, label, variant = "default", className }: { plan: Exclude<PlanId, "free">; label: string; variant?: "default" | "outline"; className?: string }) {
+export function CheckoutButton({
+  plan,
+  label,
+  variant = "default",
+  className,
+}: {
+  plan: Exclude<PlanId, "free">;
+  label: string;
+  variant?: "default" | "outline";
+  className?: string;
+}) {
   const trpc = useTRPC();
   const [busy, setBusy] = useState(false);
   const start = useMutation(trpc.billing.startCheckout.mutationOptions());
@@ -40,7 +50,11 @@ export function CheckoutButton({ plan, label, variant = "default", className }: 
     setBusy(true);
     try {
       await loadSdk();
-      const { subscriptionId, keyId, plan: p } = await start.mutateAsync({ plan });
+      const {
+        subscriptionId,
+        keyId,
+        plan: p,
+      } = await start.mutateAsync({ plan });
       new window.Razorpay!({
         key: keyId,
         subscription_id: subscriptionId,
@@ -54,7 +68,9 @@ export function CheckoutButton({ plan, label, variant = "default", className }: 
             toast.success(`You are on ${p.name}. New limits are live.`);
             window.location.reload();
           } catch {
-            toast.error("Payment received. Access will unlock within a minute.");
+            toast.error(
+              "Payment received. Access will unlock within a minute.",
+            );
           }
         },
       }).open();
@@ -65,7 +81,12 @@ export function CheckoutButton({ plan, label, variant = "default", className }: 
   }
 
   return (
-    <Button onClick={pay} disabled={busy} variant={variant} className={className}>
+    <Button
+      onClick={pay}
+      disabled={busy}
+      variant={variant}
+      className={className}
+    >
       {busy ? "Opening checkout…" : label}
     </Button>
   );

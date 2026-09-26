@@ -21,7 +21,10 @@ export function ConversationBrowser({ chatbotId }: { chatbotId: string }) {
     ),
   );
   const detail = useQuery({
-    ...trpc.conversation.detail.queryOptions({ chatbotId, conversationId: selected! }),
+    ...trpc.conversation.detail.queryOptions({
+      chatbotId,
+      conversationId: selected!,
+    }),
     enabled: !!selected,
   });
 
@@ -29,7 +32,13 @@ export function ConversationBrowser({ chatbotId }: { chatbotId: string }) {
 
   if (list.isLoading) return <Skeleton className="h-64 rounded-xl" />;
   if (!items.length)
-    return <EmptyState title="No conversations yet" body="Conversations appear here as soon as a visitor asks the live widget a question." action={null} />;
+    return (
+      <EmptyState
+        title="No conversations yet"
+        body="Conversations appear here as soon as a visitor asks the live widget a question."
+        action={null}
+      />
+    );
 
   return (
     <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
@@ -39,20 +48,34 @@ export function ConversationBrowser({ chatbotId }: { chatbotId: string }) {
             <li key={c.id}>
               <button
                 onClick={() => setSelected(c.id)}
-                className={cn("hover:bg-secondary/60 w-full px-4 py-3 text-left transition-colors", selected === c.id && "bg-primary-muted/50")}
+                className={cn(
+                  "hover:bg-secondary/60 w-full px-4 py-3 text-left transition-colors",
+                  selected === c.id && "bg-primary-muted/50",
+                )}
               >
-                <p className="truncate text-sm">{c.messages[0]?.content ?? "Conversation"}</p>
+                <p className="truncate text-sm">
+                  {c.messages[0]?.content ?? "Conversation"}
+                </p>
                 <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs">
                   {c._count.messages} messages · {when(c.lastAt)}
-                  {c.rating === 1 && <ThumbsUp className="text-success size-3" />}
-                  {c.rating === -1 && <ThumbsDown className="text-destructive size-3" />}
+                  {c.rating === 1 && (
+                    <ThumbsUp className="text-success size-3" />
+                  )}
+                  {c.rating === -1 && (
+                    <ThumbsDown className="text-destructive size-3" />
+                  )}
                 </p>
               </button>
             </li>
           ))}
         </ul>
         {list.hasNextPage && (
-          <Button variant="outline" className="w-full" onClick={() => list.fetchNextPage()} disabled={list.isFetchingNextPage}>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => list.fetchNextPage()}
+            disabled={list.isFetchingNextPage}
+          >
             {list.isFetchingNextPage ? "Loading…" : "Load older"}
           </Button>
         )}
@@ -60,20 +83,38 @@ export function ConversationBrowser({ chatbotId }: { chatbotId: string }) {
 
       <div className="panel-pad min-h-64">
         {!selected ? (
-          <p className="text-muted-foreground text-sm">Pick a conversation to read the full exchange.</p>
+          <p className="text-muted-foreground text-sm">
+            Pick a conversation to read the full exchange.
+          </p>
         ) : detail.isLoading ? (
           <Skeleton className="h-40" />
         ) : (
           <div className="space-y-4">
             <p className="text-muted-foreground text-xs">
-              {detail.data?.visitorMail ?? "Anonymous visitor"} · {detail.data?.origin ?? "unknown page"}
+              {detail.data?.visitorMail ?? "Anonymous visitor"} ·{" "}
+              {detail.data?.origin ?? "unknown page"}
             </p>
             {detail.data?.messages.map((m) => (
-              <div key={m.id} className={cn("flex", m.role === "user" && "justify-end")}>
-                <div className={cn("max-w-[80%] rounded-xl px-3.5 py-2.5 text-sm", m.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted")}>
+              <div
+                key={m.id}
+                className={cn("flex", m.role === "user" && "justify-end")}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-xl px-3.5 py-2.5 text-sm",
+                    m.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted",
+                  )}
+                >
                   <p className="whitespace-pre-wrap">{m.content}</p>
                   {Array.isArray(m.citations) && m.citations.length > 0 && (
-                    <p className="text-muted-foreground mt-2 text-xs">From {(m.citations as { title: string }[]).map((c) => c.title).join(", ")}</p>
+                    <p className="text-muted-foreground mt-2 text-xs">
+                      From{" "}
+                      {(m.citations as { title: string }[])
+                        .map((c) => c.title)
+                        .join(", ")}
+                    </p>
                   )}
                 </div>
               </div>

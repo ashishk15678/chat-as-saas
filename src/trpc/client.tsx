@@ -12,7 +12,9 @@ export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
 let browserClient: QueryClient | undefined;
 const getQueryClient = () =>
-  typeof window === "undefined" ? makeQueryClient() : (browserClient ??= makeQueryClient());
+  typeof window === "undefined"
+    ? makeQueryClient()
+    : (browserClient ??= makeQueryClient());
 
 export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();

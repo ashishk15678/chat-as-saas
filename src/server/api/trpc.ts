@@ -26,7 +26,10 @@ const t = initTRPC.context<Context>().create({
       ...shape,
       data: {
         ...shape.data,
-        fieldErrors: error.cause instanceof ZodError ? error.cause.flatten().fieldErrors : null,
+        fieldErrors:
+          error.cause instanceof ZodError
+            ? error.cause.flatten().fieldErrors
+            : null,
       },
     };
   },
@@ -38,14 +41,26 @@ export const publicProcedure = t.procedure;
 
 /** Requires a session and narrows ctx.session to a non-null type. */
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session?.user) throw new TRPCError({ code: "UNAUTHORIZED", message: "Sign in to continue." });
+  if (!ctx.session?.user)
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Sign in to continue.",
+    });
   return next({ ctx: { ...ctx, user: ctx.session.user } });
 });
 
 /** Per-user write throttle. Applied to every mutation router-wide. */
 export const writeProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const { ok, retryAfter } = await takeToken("mutation", ctx.user.id, LIMITS.mutation);
-  if (!ok) throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: `Too many changes at once. Try again in ${retryAfter}s.` });
+  const { ok, retryAfter } = await takeToken(
+    "mutation",
+    ctx.user.id,
+    LIMITS.mutation,
+  );
+  if (!ok)
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: `Too many changes at once. Try again in ${retryAfter}s.`,
+    });
   return next();
 });
 
@@ -60,8 +75,14 @@ export const botProcedure = writeProcedure
     return raw as { chatbotId: string };
   })
   .use(async ({ ctx, input, next }) => {
-    const chatbot = await ctx.db.chatbot.findFirst({ where: { id: input.chatbotId, ownerId: ctx.user.id } });
-    if (!chatbot) throw new TRPCError({ code: "NOT_FOUND", message: "That chatbot no longer exists." });
+    const chatbot = await ctx.db.chatbot.findFirst({
+      where: { id: input.chatbotId, ownerId: ctx.user.id },
+    });
+    if (!chatbot)
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "That chatbot no longer exists.",
+      });
     return next({ ctx: { ...ctx, chatbot } });
   });
 

@@ -1,17 +1,22 @@
 import { groq } from "@ai-sdk/groq";
-import { openai } from "@ai-sdk/openai";
 import { embed, streamText } from "ai";
 import { db } from "../db";
+import { embedder } from "./embedder";
 import { RAG } from "@/lib/constants";
-
-// Groq has no embedding API — OpenAI embeddings are kept for vector search.
-const embedder = openai.embedding(process.env.EMBEDDING_MODEL ?? "text-embedding-3-small");
 
 export type Citation = { sourceId: string; title: string };
 
-type Retrieved = { content: string; sourceId: string; title: string; score: number };
+type Retrieved = {
+  content: string;
+  sourceId: string;
+  title: string;
+  score: number;
+};
 
-export async function retrieve(chatbotId: string, query: string): Promise<Retrieved[]> {
+export async function retrieve(
+  chatbotId: string,
+  query: string,
+): Promise<Retrieved[]> {
   const { embedding } = await embed({ model: embedder, value: query });
   const vec = JSON.stringify(embedding);
   const rows = await db.$queryRaw<Retrieved[]>`

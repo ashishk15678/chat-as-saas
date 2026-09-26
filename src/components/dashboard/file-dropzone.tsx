@@ -28,20 +28,42 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
     for (const file of Array.from(files)) {
       try {
         setProgress((p) => ({ ...p, [file.name]: 5 }));
-        const { url, key } = await presign.mutateAsync({ chatbotId, filename: file.name, contentType: file.type, size: file.size });
-        const put = await fetch(url, { method: "PUT", body: file, headers: { "content-type": file.type } });
+        const { url, key } = await presign.mutateAsync({
+          chatbotId,
+          filename: file.name,
+          contentType: file.type,
+          size: file.size,
+        });
+        const put = await fetch(url, {
+          method: "PUT",
+          body: file,
+          headers: { "content-type": file.type },
+        });
         if (!put.ok) throw new Error("Upload rejected by storage");
         setProgress((p) => ({ ...p, [file.name]: 80 }));
-        await create.mutateAsync({ type: "FILE", chatbotId, title: file.name, key, bytes: file.size });
+        await create.mutateAsync({
+          type: "FILE",
+          chatbotId,
+          title: file.name,
+          key,
+          bytes: file.size,
+        });
         setProgress((p) => ({ ...p, [file.name]: 100 }));
         toast.success(`${file.name} added. Processing starts now.`);
       } catch (e) {
-        toast.error(e instanceof Error ? e.message : `${file.name} could not be uploaded`);
+        toast.error(
+          e instanceof Error ? e.message : `${file.name} could not be uploaded`,
+        );
       } finally {
-        setTimeout(() => setProgress(({ [file.name]: _, ...rest }) => rest), 1_200);
+        setTimeout(
+          () => setProgress(({ [file.name]: _, ...rest }) => rest),
+          1_200,
+        );
       }
     }
-    await qc.invalidateQueries({ queryKey: trpc.source.list.queryKey({ chatbotId }) });
+    await qc.invalidateQueries({
+      queryKey: trpc.source.list.queryKey({ chatbotId }),
+    });
   }
 
   return (
@@ -63,13 +85,16 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
         }}
         className={cn(
           "flex cursor-pointer flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center transition-colors",
-          over ? "border-primary bg-primary-muted/50" : "border-border hover:border-primary/50",
+          over
+            ? "border-primary bg-primary-muted/50"
+            : "border-border hover:border-primary/50",
         )}
       >
         <UploadCloud className="text-muted-foreground size-6" />
         <p className="text-sm font-medium">Drop files here, or browse</p>
         <p className="text-muted-foreground text-xs">
-          {Object.values(UPLOAD.accept).join(", ")} · up to {bytes(UPLOAD.maxBytes)} each
+          {Object.values(UPLOAD.accept).join(", ")} · up to{" "}
+          {bytes(UPLOAD.maxBytes)} each
         </p>
       </div>
       <input
@@ -84,7 +109,10 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
         <div key={name} className="mt-3 space-y-1">
           <p className="text-muted-foreground truncate text-xs">{name}</p>
           <div className="bg-secondary h-1 overflow-hidden rounded-full">
-            <div className="bg-primary h-full transition-[width]" style={{ width: `${pct}%` }} />
+            <div
+              className="bg-primary h-full transition-[width]"
+              style={{ width: `${pct}%` }}
+            />
           </div>
         </div>
       ))}

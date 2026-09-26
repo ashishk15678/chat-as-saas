@@ -11,7 +11,11 @@ export default async function ChatbotsPage() {
 
   return (
     <>
-      <PageHeader title="Chatbots" description="Each chatbot has its own sources, appearance and embed snippet." action={<CreateChatbot />} />
+      <PageHeader
+        title="Chatbots"
+        description="Each chatbot has its own sources, appearance and embed snippet."
+        action={<CreateChatbot />}
+      />
 
       {bots.length === 0 ? (
         <EmptyState
@@ -22,18 +26,29 @@ export default async function ChatbotsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {bots.map((b) => (
-            <Link key={b.id} href={`/dashboard/chatbots/${b.id}`} className="panel-pad press hover:shadow-[var(--shadow-soft)]">
+            <Link
+              key={b.id}
+              href={`/dashboard/chatbots/${b.id}`}
+              className="panel-pad press hover:shadow-[var(--shadow-soft)]"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="size-3 rounded-md" style={{ background: b.accent }} aria-hidden />
+                  <span
+                    className="size-3 rounded-md"
+                    style={{ background: b.accent }}
+                    aria-hidden
+                  />
                   <h2 className="font-medium">{b.name}</h2>
                 </div>
                 <StatusDot status={b.status} />
               </div>
               <p className="text-muted-foreground mt-4 text-sm">
-                {count(b._count.sources)} sources · {count(b._count.conversations)} conversations
+                {count(b._count.sources)} sources ·{" "}
+                {count(b._count.conversations)} conversations
               </p>
-              <p className="text-muted-foreground mt-1 text-xs">Edited {when(b.updatedAt)}</p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Edited {when(b.updatedAt)}
+              </p>
             </Link>
           ))}
         </div>

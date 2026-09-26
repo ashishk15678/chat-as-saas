@@ -9,7 +9,12 @@ export const rzp = new Razorpay({
 });
 
 /** Create (or reuse) the Razorpay customer that mirrors our user. */
-export async function ensureCustomer(u: { id: string; email: string; name?: string | null; existingId?: string | null }) {
+export async function ensureCustomer(u: {
+  id: string;
+  email: string;
+  name?: string | null;
+  existingId?: string | null;
+}) {
   if (u.existingId) return u.existingId;
   const customer = await rzp.customers.create({
     name: u.name ?? u.email,
@@ -20,9 +25,14 @@ export async function ensureCustomer(u: { id: string; email: string; name?: stri
   return customer.id;
 }
 
-export async function createSubscription(params: { plan: PlanId; customerId: string; userId: string }) {
+export async function createSubscription(params: {
+  plan: PlanId;
+  customerId: string;
+  userId: string;
+}) {
   const planId = PLANS[params.plan].razorpayPlanId;
-  if (!planId) throw new Error(`No Razorpay plan configured for ${params.plan}`);
+  if (!planId)
+    throw new Error(`No Razorpay plan configured for ${params.plan}`);
   return rzp.subscriptions.create({
     plan_id: planId,
     customer_id: params.customerId,
@@ -37,7 +47,11 @@ export const cancelSubscription = (subId: string, atCycleEnd = true) =>
   rzp.subscriptions.cancel(subId, atCycleEnd);
 
 /** Checkout handshake: signature = HMAC(payment_id + '|' + subscription_id). */
-export function verifyCheckout(p: { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string }) {
+export function verifyCheckout(p: {
+  razorpay_payment_id: string;
+  razorpay_subscription_id: string;
+  razorpay_signature: string;
+}) {
   const expected = createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
     .update(`${p.razorpay_payment_id}|${p.razorpay_subscription_id}`)
     .digest("hex");
@@ -46,9 +60,12 @@ export function verifyCheckout(p: { razorpay_payment_id: string; razorpay_subscr
 
 /** Webhook: signature is over the exact raw body. Never parse before verifying. */
 export function verifyWebhook(rawBody: string, signature: string) {
-  const expected = createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!).update(rawBody).digest("hex");
+  const expected = createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET!)
+    .update(rawBody)
+    .digest("hex");
   return safeEqual(expected, signature);
 }
 
 export const planFromRazorpayPlanId = (planId?: string): PlanId =>
-  (Object.values(PLANS).find((p) => p.razorpayPlanId === planId)?.id as PlanId) ?? "free";
+  (Object.values(PLANS).find((p) => p.razorpayPlanId === planId)
+    ?.id as PlanId) ?? "free";

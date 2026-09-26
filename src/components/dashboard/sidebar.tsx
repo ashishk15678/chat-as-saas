@@ -18,8 +18,10 @@ export function Sidebar() {
   const path = usePathname();
   return (
     <aside className="bg-sidebar hidden w-60 shrink-0 border-r border-border lg:flex lg:flex-col">
-      <Link href="/dashboard" className="flex h-14 items-center gap-2 px-5 font-semibold tracking-[-0.02em]">
-        <span className="bg-primary size-5 rounded-md" aria-hidden />
+      <Link
+        href="/dashboard"
+        className="flex h-14 items-center gap-2 px-5 font-semibold tracking-[-0.02em]"
+      >
         {APP.name}
       </Link>
       <nav className="flex-1 space-y-0.5 px-3 py-3">
@@ -31,7 +33,9 @@ export function Sidebar() {
               href={href}
               className={cn(
                 "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors",
-                active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-muted-foreground hover:text-foreground hover:bg-secondary",
+                active
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary",
               )}
             >
               <Icon className="size-4" />
@@ -40,8 +44,13 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <Button className={" bg-red-500/10 hover:bg-red-500/30  text-red-500   mb-4 mx-2"}>Sign out</Button>
-
+      <Button
+        className={
+          " bg-red-500/10 hover:bg-red-500/30  text-red-500   mb-4 mx-2"
+        }
+      >
+        Sign out
+      </Button>
     </aside>
   );
 }

@@ -8,7 +8,10 @@ export default async function AccountSettingsPage() {
 
   return (
     <>
-      <PageHeader title="Settings" description="Your account and the keys that talk to the Chatline API." />
+      <PageHeader
+        title="Settings"
+        description="Your account and the keys that talk to the Chatline API."
+      />
 
       <div className="panel-pad space-y-4">
         <h2 className="font-medium">Account</h2>
@@ -22,7 +25,10 @@ export default async function AccountSettingsPage() {
             <dd className="mt-0.5">{session?.user?.email}</dd>
           </div>
         </dl>
-        <p className="text-muted-foreground text-xs">Your name and email come from Google. Change them there and sign in again.</p>
+        <p className="text-muted-foreground text-xs">
+          Your name and email come from Google. Change them there and sign in
+          again.
+        </p>
       </div>
 
       <div className="mt-4">

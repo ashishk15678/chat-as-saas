@@ -11,15 +11,27 @@ const sans = GeistSans;
 const mono = GeistMono;
 
 export const metadata: Metadata = {
-  title: { default: `${APP.name} — ${APP.tagline}`, template: `%s · ${APP.name}` },
-  description: "Upload your documents, embed one line of script, and answer customer questions on your site around the clock.",
+  title: {
+    default: `${APP.name} — ${APP.tagline}`,
+    template: `%s · ${APP.name}`,
+  },
+  description:
+    "Upload your documents, embed one line of script, and answer customer questions on your site around the clock.",
   metadataBase: new URL(APP.url),
   openGraph: { type: "website", siteName: APP.name },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${mono.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${sans.variable} ${mono.variable}`}
+    >
       <body>
         <ThemeProvider>
           <TRPCReactProvider>{children}</TRPCReactProvider>

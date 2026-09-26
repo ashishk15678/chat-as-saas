@@ -3,7 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { ChatWindow, type ChatMessage } from "@/components/chat/chat-window";
 
-type Bot = { id: string; name: string; greeting: string; accent: string; collectEmail: boolean };
+type Bot = {
+  id: string;
+  name: string;
+  greeting: string;
+  accent: string;
+  collectEmail: boolean;
+};
 
 const visitorKey = "chatline:visitor";
 
@@ -31,7 +37,9 @@ export function EmbeddedChat({ bot }: { bot: Bot }) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        ...(window.chatlineSettings?.visitorHash ? { "x-visitor-hash": window.chatlineSettings.visitorHash } : {}),
+        ...(window.chatlineSettings?.visitorHash
+          ? { "x-visitor-hash": window.chatlineSettings.visitorHash }
+          : {}),
       },
       body: JSON.stringify({
         chatbotId: bot.id,
@@ -43,11 +51,14 @@ export function EmbeddedChat({ bot }: { bot: Bot }) {
     });
 
     if (!res.ok) {
-      const { error } = await res.json().catch(() => ({ error: "Something went wrong." }));
+      const { error } = await res
+        .json()
+        .catch(() => ({ error: "Something went wrong." }));
       return { role: "assistant", content: error };
     }
 
-    conversation.current = res.headers.get("x-conversation-id") ?? conversation.current;
+    conversation.current =
+      res.headers.get("x-conversation-id") ?? conversation.current;
 
     // Render the stream as it arrives.
     const reader = res.body!.getReader();
@@ -66,7 +77,9 @@ export function EmbeddedChat({ bot }: { bot: Bot }) {
       <div className="bg-card flex h-dvh flex-col justify-center gap-4 p-6">
         <div>
           <h1 className="font-medium">Before we start</h1>
-          <p className="text-muted-foreground mt-1 text-sm">Leave an email so the team can follow up if the answer is not here.</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Leave an email so the team can follow up if the answer is not here.
+          </p>
         </div>
         <input
           type="email"
@@ -76,10 +89,17 @@ export function EmbeddedChat({ bot }: { bot: Bot }) {
           className="border-input focus:ring-ring rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2"
         />
         <div className="flex gap-2">
-          <button onClick={() => setAsked(true)} className="bg-primary text-primary-foreground press rounded-lg px-4 py-2 text-sm" style={{ background: bot.accent }}>
+          <button
+            onClick={() => setAsked(true)}
+            className="bg-primary text-primary-foreground press rounded-lg px-4 py-2 text-sm"
+            style={{ background: bot.accent }}
+          >
             Start chat
           </button>
-          <button onClick={() => setAsked(true)} className="text-muted-foreground px-3 py-2 text-sm">
+          <button
+            onClick={() => setAsked(true)}
+            className="text-muted-foreground px-3 py-2 text-sm"
+          >
             Skip
           </button>
         </div>
@@ -87,7 +107,14 @@ export function EmbeddedChat({ bot }: { bot: Bot }) {
     );
   }
 
-  return <ChatWindow className="h-dvh" greeting={bot.greeting} accent={bot.accent} send={send} />;
+  return (
+    <ChatWindow
+      className="h-dvh"
+      greeting={bot.greeting}
+      accent={bot.accent}
+      send={send}
+    />
+  );
 }
 
 declare global {

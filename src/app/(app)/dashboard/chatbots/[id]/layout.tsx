@@ -18,11 +18,18 @@ export default async function ChatbotLayout({
 
   return (
     <>
-      <Link href="/dashboard/chatbots" className="text-muted-foreground hover:text-foreground mb-4 inline-flex items-center gap-1 text-sm">
+      <Link
+        href="/dashboard/chatbots"
+        className="text-muted-foreground hover:text-foreground mb-4 inline-flex items-center gap-1 text-sm"
+      >
         <ChevronLeft className="size-4" /> Chatbots
       </Link>
       <div className="flex flex-wrap items-center gap-3 pb-5">
-        <span className="size-3 rounded-md" style={{ background: bot.accent }} aria-hidden />
+        <span
+          className="size-3 rounded-md"
+          style={{ background: bot.accent }}
+          aria-hidden
+        />
         <h1 className="text-2xl font-semibold">{bot.name}</h1>
         <StatusDot status={bot.status} />
       </div>

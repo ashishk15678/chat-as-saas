@@ -4,7 +4,10 @@ import { nextCookies } from "better-auth/next-js";
 import { db } from "./db";
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  baseURL:
+    process.env.BETTER_AUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000",
   secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(db, { provider: "postgresql" }),
 
@@ -22,7 +25,7 @@ export const auth = betterAuth({
 
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days
-    updateAge: 60 * 60 * 24,       // refresh token once per day
+    updateAge: 60 * 60 * 24, // refresh token once per day
     cookieCache: { enabled: true, maxAge: 60 * 5 },
   },
 
@@ -39,7 +42,10 @@ export const auth = betterAuth({
               create: { userId: user.id, plan: "free" },
             });
           } catch (err) {
-            console.error(`[auth] failed to seed subscription for ${user.id}:`, err);
+            console.error(
+              `[auth] failed to seed subscription for ${user.id}:`,
+              err,
+            );
           }
         },
       },

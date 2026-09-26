@@ -10,8 +10,7 @@ export function SignOutButton() {
   return (
     <DropdownMenuItem
       className="gap-2"
-      onSelect={async (e) => {
-        e.preventDefault();
+      onClick={async () => {
         await signOut();
         router.push("/login");
         router.refresh();

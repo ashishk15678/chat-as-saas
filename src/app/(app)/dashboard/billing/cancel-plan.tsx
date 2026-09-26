@@ -21,7 +21,11 @@ export function CancelPlan() {
 
   return (
     <button
-      onClick={() => confirm("Cancel at the end of this billing cycle? You keep access until then.") && cancel.mutate()}
+      onClick={() =>
+        confirm(
+          "Cancel at the end of this billing cycle? You keep access until then.",
+        ) && cancel.mutate()
+      }
       disabled={cancel.isPending}
       className="text-muted-foreground hover:text-destructive text-sm transition-colors"
     >

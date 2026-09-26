@@ -5,11 +5,23 @@ import { EmbeddedChat } from "./embedded-chat";
 export const dynamic = "force-dynamic";
 
 /** The page inside the widget iframe. Deliberately minimal: no nav, no analytics, no session. */
-export default async function EmbedPage({ params }: { params: Promise<{ botId: string }> }) {
+export default async function EmbedPage({
+  params,
+}: {
+  params: Promise<{ botId: string }>;
+}) {
   const { botId } = await params;
   const bot = await db.chatbot.findUnique({
     where: { id: botId },
-    select: { id: true, name: true, greeting: true, accent: true, themeMode: true, status: true, collectEmail: true },
+    select: {
+      id: true,
+      name: true,
+      greeting: true,
+      accent: true,
+      themeMode: true,
+      status: true,
+      collectEmail: true,
+    },
   });
   if (!bot || bot.status !== "LIVE") notFound();
 

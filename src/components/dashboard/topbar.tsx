@@ -26,20 +26,37 @@ export async function Topbar() {
       <div className="ml-auto flex items-center gap-2">
         <ThemeToggle />
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="Account" />}>
-              <Avatar className="size-7">
-                <AvatarImage src={user?.image ?? undefined} alt="" />
-                <AvatarFallback>{user?.name?.[0]?.toUpperCase() ?? "U"}</AvatarFallback>
-              </Avatar>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                aria-label="Account"
+              />
+            }
+          >
+            <Avatar className="size-7">
+              <AvatarImage src={user?.image ?? undefined} alt="" />
+              <AvatarFallback>
+                {user?.name?.[0]?.toUpperCase() ?? "U"}
+              </AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
               <p className="text-sm font-medium">{user?.name}</p>
-              <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+              <p className="text-muted-foreground truncate text-xs">
+                {user?.email}
+              </p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem render={<Link href="/dashboard/settings" />}>Settings</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/billing" />}>Plan and usage</DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/dashboard/settings" />}>
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/dashboard/billing" />}>
+              Plan and usage
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <SignOutButton />
           </DropdownMenuContent>

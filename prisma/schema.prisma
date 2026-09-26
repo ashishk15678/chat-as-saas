@@ -12,9 +12,9 @@ datasource db {
   extensions = [vector]
 }
 
-// ---------------------------------------------------------------------------
+// ------------------------
 // better-auth core models
-// ---------------------------------------------------------------------------
+// ------------------------
 
 model User {
   id            String   @id
@@ -152,7 +152,8 @@ model Source {
 }
 
 // Chunk.embedding is a pgvector column — created via raw SQL migration.
-// ALTER TABLE "Chunk" ADD COLUMN embedding vector(1536);
+// Dimension matches all-MiniLM-L6-v2 (384). Run once on your DB:
+// ALTER TABLE "Chunk" ADD COLUMN embedding vector(384);
 
 model Chunk {
   id        String @id @default(cuid())

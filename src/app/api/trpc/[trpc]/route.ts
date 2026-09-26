@@ -8,7 +8,8 @@ const handler = (req: Request) =>
     router: appRouter,
     createContext: () => createTRPCContext({ headers: req.headers }),
     onError: ({ error, path }) => {
-      if (error.code === "INTERNAL_SERVER_ERROR") console.error(`tRPC ${path}:`, error);
+      if (error.code === "INTERNAL_SERVER_ERROR")
+        console.error(`tRPC ${path}:`, error);
     },
   });
 

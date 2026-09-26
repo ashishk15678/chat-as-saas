@@ -8,7 +8,10 @@ export function newApiKey() {
   return { secret, prefix: secret.slice(0, 14), hash: hashKey(secret) };
 }
 
-export const hashKey = (secret: string) => createHash("sha256").update(secret + pepper()).digest("hex");
+export const hashKey = (secret: string) =>
+  createHash("sha256")
+    .update(secret + pepper())
+    .digest("hex");
 
 export function safeEqual(a: string, b: string) {
   const x = Buffer.from(a);
