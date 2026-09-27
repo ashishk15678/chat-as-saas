@@ -42,18 +42,6 @@ function Landing({ onLaunch }: { onLaunch: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <main className="min-h-screen overflow-hidden bg-[#f8f8f6] text-[#17171b]">
-      <iframe
-        src="http://localhost:3000/embed/cmujujm0e0000fusbjzgowgcl"
-        //style="width:100%;height:600px;border:0;border-radius:14px"
-        style={{
-          width: "300px",
-          height: "600px",
-          position: "sticky",
-          right: "0px",
-          bottom: "0px",
-        }}
-        title="acme"
-      ></iframe>
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8">
         {menuOpen && (
           <div className="flex flex-col gap-4 border-b border-black/10 py-5 text-sm font-semibold sm:hidden">
