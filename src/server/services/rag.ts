@@ -17,7 +17,15 @@ export async function retrieve(
   chatbotId: string,
   query: string,
 ): Promise<Retrieved[]> {
-  const { embedding } = await embed({ model: embedder, value: query });
+  const { embedding } = await embed({
+    model: embedder,
+    value: query,
+    providerOptions: {
+      google: {
+        outputDimensionality: 768,
+      },
+    },
+  });
   const vec = JSON.stringify(embedding);
   const rows = await db.$queryRaw<Retrieved[]>`
     SELECT c.content, c."sourceId", s.title, 1 - (c.embedding <=> ${vec}::vector) AS score

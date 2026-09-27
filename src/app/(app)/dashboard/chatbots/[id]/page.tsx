@@ -8,6 +8,7 @@ export default async function PlaygroundPage({
 }) {
   const { id } = await params;
   const bot = await api.chatbot.byId({ chatbotId: id });
+  console.log({ bot });
   return (
     <Playground chatbotId={id} greeting={bot.greeting} accent={bot.accent} />
   );

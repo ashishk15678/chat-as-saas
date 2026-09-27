@@ -32,7 +32,11 @@ async function embedWithRetry(
   attempt = 0,
 ): Promise<number[][]> {
   try {
-    const { embeddings } = await embedMany({ model: embedder, values });
+    const { embeddings } = await embedMany({
+      model: embedder,
+      values,
+      providerOptions: { google: { outputDimensionality: 768 } },
+    });
     return embeddings;
   } catch (e) {
     if (attempt >= 3) throw e;

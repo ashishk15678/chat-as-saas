@@ -1,6 +1,10 @@
-import { randomUUID, createHmac, createHash } from "crypto";
+import { randomUUID } from "crypto";
 import { UPLOAD } from "@/lib/constants";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 /**
@@ -55,14 +59,13 @@ export async function presignPut(
 }
 
 export async function fetchObject(key: string): Promise<Buffer> {
-  const res = await fetch(
-    `${process.env.S3_ENDPOINT}/${process.env.S3_BUCKET}/${key}`,
-  );
-  if (!res.ok) throw new Error(`Could not read ${key}`);
+  // Use a presigned GET — plain S3 URLs are not publicly accessible
+  const url = await presignGet(key, 300);
+  const res = await fetch(url);
+  if (!res.ok)
+    throw new Error(`Could not read ${key} from storage (${res.status})`);
   return Buffer.from(await res.arrayBuffer());
 }
-
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 
 export async function presignGet(
   key: string,

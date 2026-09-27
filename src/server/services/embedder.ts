@@ -1,15 +1,11 @@
 import { google } from "@ai-sdk/google";
 
 /**
- * gemini-embedding-001 on Google's free tier: no card on file, 100 requests a
- * minute, 30,000 tokens a minute, 1,000 requests a day, 2,048 tokens per text.
- * Output is truncated to 768 dimensions — smaller than the 3072 default, which
- * halves storage and keeps pgvector's HNSW index fast, at a negligible quality
- * cost for support-style retrieval. This is one line to swap for a paid
- * provider later; nothing else in the ingestion or retrieval path changes.
+ * gemini-embedding-001 supports output truncation via outputDimensionality.
+ * We cap at 768 so embeddings fit the pgvector(768) column and stay under
+ * the HNSW 2000-dim index limit. Quality loss at this size is negligible
+ * for support-style retrieval.
  */
-export const EMBED_DIMENSIONS = 768;
-
 export const embedder = google.textEmbeddingModel("gemini-embedding-001");
 
 /** Chunks per embedding request. Tuned to stay under the free tier's per-minute token ceiling. */

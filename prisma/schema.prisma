@@ -113,7 +113,7 @@ model Chatbot {
   name           String
   status         String   @default("DRAFT") // DRAFT | LIVE | PAUSED
   systemPrompt   String   @default("You are a helpful assistant.") @db.Text
-  model          String   @default("llama-3.3-70b-versatile")
+  model          String   @default("openai/gpt-oss-120b")
   temperature    Float    @default(0.3)
   greeting       String   @default("Hi! How can I help you today?")
   accent         String   @default("#6366f1")

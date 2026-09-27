@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/empty-state";
 import { StatusDot } from "@/components/shared/status-dot";
+import { ProcessingBorder } from "@/components/shared/processing-border";
 import { FileDropzone } from "@/components/dashboard/file-dropzone";
 import { useTRPC } from "@/trpc/client";
 import { bytes, count, when } from "@/lib/format";
@@ -19,25 +20,18 @@ import { bytes, count, when } from "@/lib/format";
 export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
   const trpc = useTRPC();
   const qc = useQueryClient();
-  const list = useQuery({
-    ...trpc.source.list.queryOptions({ chatbotId }),
-    // Poll only while something is still being processed.
-    refetchInterval: (q) =>
-      q.state.data?.some(
-        (s) => s.status === "QUEUED" || s.status === "PROCESSING",
-      )
-        ? 3_000
-        : false,
-  });
+
+  const list = useQuery(trpc.source.list.queryOptions({ chatbotId }));
 
   const invalidate = () =>
     qc.invalidateQueries({
       queryKey: trpc.source.list.queryKey({ chatbotId }),
     });
+
   const create = useMutation(
     trpc.source.create.mutationOptions({
       onSuccess: () => {
-        toast.success("Source added");
+        toast.success("Source added and ready.");
         void invalidate();
       },
       onError: (e) => toast.error(e.message),
@@ -47,7 +41,13 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
     trpc.source.remove.mutationOptions({ onSuccess: invalidate }),
   );
   const retry = useMutation(
-    trpc.source.retry.mutationOptions({ onSuccess: invalidate }),
+    trpc.source.retry.mutationOptions({
+      onSuccess: () => {
+        toast.success("Reprocessed successfully.");
+        void invalidate();
+      },
+      onError: (e) => toast.error(e.message),
+    }),
   );
 
   const [url, setUrl] = useState("");
@@ -88,7 +88,7 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
               )
             }
           >
-            Add page
+            {create.isPending ? "Processing…" : "Add page"}
           </Button>
         </TabsContent>
 
@@ -127,7 +127,7 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
               )
             }
           >
-            Add text
+            {create.isPending ? "Processing…" : "Add text"}
           </Button>
         </TabsContent>
 
@@ -166,7 +166,7 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
               )
             }
           >
-            Add question
+            {create.isPending ? "Processing…" : "Add question"}
           </Button>
         </TabsContent>
       </Tabs>
@@ -180,48 +180,63 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
       ) : list.data?.length === 0 ? (
         <EmptyState
           title="Nothing to learn from yet"
-          body="Add a document, a help page or a few questions. Processing usually finishes within a minute."
+          body="Add a document, a help page or a few questions. Sources are processed immediately."
           action={null}
         />
       ) : (
-        <ul className="panel divide-y">
-          {list.data?.map((s) => (
-            <li key={s.id} className="flex items-center gap-4 px-5 py-3.5">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{s.title}</p>
-                <p className="text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2 text-xs">
-                  <StatusDot status={s.status} />
-                  <span>·</span>
-                  <span>
-                    {s.bytes ? bytes(s.bytes) : `${count(s.tokens)} tokens`}
-                  </span>
-                  <span>·</span>
-                  <span>{when(s.createdAt)}</span>
-                </p>
-                {s.error && (
-                  <p className="text-destructive mt-1 text-xs">{s.error}</p>
+        <ul className="panel divide-y overflow-hidden">
+          {list.data?.map((s) => {
+            const isActive = s.status === "QUEUED" || s.status === "PROCESSING";
+            return (
+              <li
+                key={s.id}
+                className="relative flex items-center gap-4 px-5 py-3.5"
+              >
+                {/* Animated border traces the row when processing */}
+                {isActive && <ProcessingBorder rounded={0} />}
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium">{s.title}</p>
+                  <p className="text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2 text-xs">
+                    <StatusDot status={s.status} />
+                    <span>·</span>
+                    <span>
+                      {s.bytes ? bytes(s.bytes) : `${count(s.tokens)} tokens`}
+                    </span>
+                    <span>·</span>
+                    <span>{when(s.createdAt)}</span>
+                  </p>
+                  {s.error && (
+                    <p className="text-destructive mt-1 text-xs">{s.error}</p>
+                  )}
+                </div>
+
+                {s.status === "FAILED" && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={retry.isPending}
+                    onClick={() => retry.mutate({ chatbotId, sourceId: s.id })}
+                    aria-label="Try processing again"
+                  >
+                    <RotateCcw
+                      className={
+                        retry.isPending ? "animate-spin size-4" : "size-4"
+                      }
+                    />
+                  </Button>
                 )}
-              </div>
-              {s.status === "FAILED" && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => retry.mutate({ chatbotId, sourceId: s.id })}
-                  aria-label="Try processing again"
+                  onClick={() => remove.mutate({ chatbotId, sourceId: s.id })}
+                  aria-label={`Remove ${s.title}`}
                 >
-                  <RotateCcw className="size-4" />
+                  <Trash2 className="size-4" />
                 </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => remove.mutate({ chatbotId, sourceId: s.id })}
-                aria-label={`Remove ${s.title}`}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

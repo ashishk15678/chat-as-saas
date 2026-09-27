@@ -49,7 +49,7 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
           bytes: file.size,
         });
         setProgress((p) => ({ ...p, [file.name]: 100 }));
-        toast.success(`${file.name} added. Processing starts now.`);
+        toast.success(`${file.name} ready.`);
       } catch (e) {
         toast.error(
           e instanceof Error ? e.message : `${file.name} could not be uploaded`,
@@ -107,10 +107,13 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
       />
       {Object.entries(progress).map(([name, pct]) => (
         <div key={name} className="mt-3 space-y-1">
-          <p className="text-muted-foreground truncate text-xs">{name}</p>
+          <p className="text-muted-foreground truncate text-xs">
+            {name} —{" "}
+            {pct < 80 ? "Uploading…" : pct < 100 ? "Processing…" : "Done"}
+          </p>
           <div className="bg-secondary h-1 overflow-hidden rounded-full">
             <div
-              className="bg-primary h-full transition-[width]"
+              className="bg-primary h-full transition-[width] duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>

@@ -7,8 +7,15 @@ import {
   presignPut,
   assertUploadable,
   presignGet,
+  fetchObject,
 } from "../../services/storage";
 import { recordUsage } from "../../services/usage";
+import {
+  processSource,
+  commitChunks,
+  ingestSource,
+  estimateTokens,
+} from "../../services/ingest";
 import { UPLOAD } from "@/lib/constants";
 
 export const sourceRouter = router({
@@ -27,24 +34,19 @@ export const sourceRouter = router({
           status: true,
           error: true,
           createdAt: true,
-          location: true, // Required to build the S3 URL
+          location: true,
         },
       });
-
-      // Map over sources and generate full URLs for files
       return Promise.all(
         sources.map(async (source) => {
           let url = source.location;
-
-          // If it's a file, generate a secure pre-signed GET URL (valid for 1 hour)
           if (source.type === "FILE") {
             try {
               url = await presignGet(source.location, 3600);
             } catch {
-              url = ""; // Fallback if the file is missing from storage
+              url = "";
             }
           }
-
           return {
             id: source.id,
             type: source.type,
@@ -54,13 +56,12 @@ export const sourceRouter = router({
             status: source.status,
             error: source.error,
             createdAt: source.createdAt,
-            url, // This will now contain the full S3 pre-signed GET URL for files!
+            url,
           };
         }),
       );
     }),
 
-  /** Step 1 of an upload: check the quota, then hand back a short-lived PUT url. */
   presign: botProcedure
     .input(
       z.object({
@@ -89,8 +90,14 @@ export const sourceRouter = router({
       return { url, key, accept: UPLOAD.accept };
     }),
 
-  /** Step 2: register the source. Ingestion happens in the worker. */
+  /**
+   * Create a source and process it entirely before returning.
+   * If processing fails, nothing is saved — the caller gets a TRPC error.
+   * This means status goes from non-existent straight to READY (or throws),
+   * so the UI never shows a stuck PROCESSING row.
+   */
   create: botProcedure.input(sourceCreate).mutation(async ({ ctx, input }) => {
+    // Build the raw source descriptor (not saved yet)
     const data =
       input.type === "FILE"
         ? {
@@ -104,6 +111,7 @@ export const sourceRouter = router({
               type: "URL" as const,
               title: new URL(input.url).hostname + new URL(input.url).pathname,
               location: input.url,
+              bytes: 0,
             }
           : input.type === "TEXT"
             ? {
@@ -119,29 +127,61 @@ export const sourceRouter = router({
                 bytes: input.answer.length,
               };
 
+    // For FILE sources, fetch from S3 (already uploaded by the dropzone)
+    let fileBuffer: Buffer | undefined;
+    if (input.type === "FILE") {
+      try {
+        fileBuffer = await fetchObject(input.key);
+      } catch (e) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Could not read the uploaded file from storage.",
+        });
+      }
+    }
+
+    // Process entirely in memory: extract → chunk → embed. Throws on failure.
+    let pieces: string[];
+    let embeddings: number[][];
+    try {
+      ({ pieces, embeddings } = await processSource(data, fileBuffer));
+    } catch (e) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message:
+          e instanceof Error
+            ? e.message
+            : "Processing failed — check the source content and try again.",
+      });
+    }
+
+    // Only now write to the database — status goes straight to READY
+    const tokens = pieces.reduce((a, c) => a + estimateTokens(c), 0);
     const source = await ctx.db.source.create({
-      data: { ...data, chatbotId: ctx.chatbot.id },
+      data: { ...data, chatbotId: ctx.chatbot.id, status: "READY", tokens },
       select: { id: true },
     });
+
     if (data.bytes)
       await recordUsage(ctx.user.id, {
         storedMb: Math.ceil(data.bytes / 1024 / 1024),
       });
 
-    const { enqueueIngest } = await import("../../workers/queue");
-    await enqueueIngest(source.id);
+    // Commit chunks with the pre-computed embeddings
+    await commitChunks(source.id, ctx.chatbot.id, pieces, embeddings);
+
     return source;
   }),
 
   retry: botProcedure
     .input(z.object({ chatbotId: id, sourceId: id }))
     .mutation(async ({ ctx, input }) => {
-      const { enqueueIngest } = await import("../../workers/queue");
       await ctx.db.source.update({
         where: { id: input.sourceId, chatbotId: ctx.chatbot.id },
         data: { status: "QUEUED", error: null },
       });
-      await enqueueIngest(input.sourceId);
+      // Run inline so the mutation doesn't return until it's done
+      await ingestSource(input.sourceId);
       return { ok: true };
     }),
 
