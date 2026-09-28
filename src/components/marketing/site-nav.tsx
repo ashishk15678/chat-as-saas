@@ -3,29 +3,35 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme";
 import { APP } from "@/lib/constants";
 
+function PixelLogo() {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="pixel-deco">
+        <span /><span /><span /><span />
+      </div>
+      <span className="text-[15px] font-semibold tracking-[-0.04em]">{APP.name}</span>
+    </div>
+  );
+}
+
 const LINKS = [
-  { href: "/#how", label: "How it works" },
-  { href: "/#sources", label: "Your content" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/docs", label: "Docs" },
+  { href: "/#how",     label: "How it works" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/docs",     label: "Docs" },
 ];
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="bg-background/30 sticky top-0 z-50 border-b border-border backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-5">
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-semibold tracking-[-0.02em]"
-        >
-          {APP.name}
+        <Link href="/" aria-label={`${APP.name} home`}>
+          <PixelLogo />
         </Link>
-        <div className="hidden items-center gap-6 md:flex">
+
+        <div className="hidden items-center gap-5 md:flex">
           {LINKS.map((l) => (
             <Link
               key={l.href}
@@ -36,42 +42,47 @@ export function SiteNav() {
             </Link>
           ))}
         </div>
+
         <div className="ml-auto flex items-center gap-2">
-          <ThemeToggle />
-          <Button
-            render={<Link href="/login" />}
-            variant="ghost"
-            size="sm"
-            className="hidden sm:inline-flex"
+          <Link
+            href="/login"
+            className="hidden rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
           >
             Sign in
-          </Button>
-          <Button render={<Link href="/signup" />} size="sm" className="press">
+          </Link>
+          <Link
+            href="/signup"
+            className="press rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-colors hover:bg-accent hover:text-foreground"
+          >
             Start free
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
+          </Link>
+          <button
+            className="ml-1 flex size-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground md:hidden"
             onClick={() => setOpen(!open)}
-            aria-label="Menu"
+            aria-label="Toggle menu"
           >
             {open ? <X className="size-4" /> : <Menu className="size-4" />}
-          </Button>
+          </button>
         </div>
       </nav>
+
       {open && (
-        <div className="space-y-1 border-t px-5 py-3 md:hidden">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              className="block py-2 text-sm"
-            >
-              {l.label}
-            </Link>
-          ))}
+        <div className="border-t border-border bg-background/95 px-5 py-4 md:hidden">
+          <div className="flex flex-col gap-1">
+            {LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-surface"
+              >
+                {l.label}
+              </Link>
+            ))}
+            <div className="mt-2 border-t border-border pt-2">
+              <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm hover:bg-surface">Sign in</Link>
+            </div>
+          </div>
         </div>
       )}
     </header>

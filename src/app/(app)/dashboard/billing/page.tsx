@@ -1,7 +1,7 @@
 import { api } from "@/trpc/server";
 import { PageHeader } from "@/components/shared/page-header";
 import { Meter } from "@/components/shared/stat";
-import { StatusDot } from "@/components/shared/status-dot";
+import { StatusPill } from "@/components/shared/status-dot";
 import { PricingTable } from "@/components/marketing/pricing-table";
 import { CancelPlan } from "./cancel-plan";
 import { count } from "@/lib/format";
@@ -9,51 +9,59 @@ import { count } from "@/lib/format";
 export default async function BillingPage() {
   const { usage, subscription } = await api.billing.summary();
 
+  const renewLabel = subscription?.currentPeriodEnd
+    ? `${subscription.cancelAtPeriodEnd ? "Ends" : "Renews"} ${subscription.currentPeriodEnd.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`
+    : "No renewal scheduled";
+
   return (
     <>
       <PageHeader
-        title="Plan and usage"
+        title="Plan & usage"
         description="Billing runs on Razorpay. Invoices are emailed after each charge."
       />
 
+      {/* Current plan card */}
       <div className="panel-pad space-y-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-lg font-medium">{usage.limits.name}</p>
-            <p className="text-muted-foreground text-sm">
-              {subscription?.currentPeriodEnd
-                ? `${subscription.cancelAtPeriodEnd ? "Ends" : "Renews"} on ${subscription.currentPeriodEnd.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`
-                : "No renewal scheduled"}
-            </p>
+            <p className="text-lg font-semibold tracking-[-0.03em]">{usage.limits.name} plan</p>
+            <p className="text-muted-foreground mt-0.5 text-sm">{renewLabel}</p>
           </div>
-          <StatusDot status={subscription?.status ?? "ACTIVE"} />
+          <StatusPill status={subscription?.status ?? "ACTIVE"} />
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-3">
+        {/* Usage meters */}
+        <div className="grid gap-4 sm:grid-cols-3">
           <Meter
-            label={`Messages (${count(usage.messages)} of ${count(usage.limits.messages)})`}
+            label={`Messages — ${count(usage.messages)} / ${count(usage.limits.messages)}`}
             value={usage.messages}
             max={usage.limits.messages}
           />
           <Meter
-            label={`Sources (${usage.storedMb} of ${usage.limits.storageMb} MB)`}
+            label={`Sources — ${usage.storedMb} / ${usage.limits.storageMb} MB`}
             value={usage.storedMb}
             max={usage.limits.storageMb}
           />
           <Meter
-            label={`Chatbots (${usage.bots} of ${usage.limits.bots})`}
+            label={`Chatbots — ${usage.bots} / ${usage.limits.bots}`}
             value={usage.bots}
             max={usage.limits.bots}
           />
         </div>
 
+        {/* Cancel — only shown when on a paid active plan */}
         {usage.plan !== "free" && !subscription?.cancelAtPeriodEnd && (
-          <CancelPlan />
+          <div className="border-t border-border pt-4">
+            <CancelPlan />
+          </div>
         )}
       </div>
 
-      <h2 className="mt-10 mb-4 font-medium">Change plan</h2>
-      <PricingTable currentPlan={usage.plan} signedIn />
+      {/* Plan picker */}
+      <div className="mt-8">
+        <p className="mb-4 text-sm font-semibold">Change plan</p>
+        <PricingTable currentPlan={usage.plan} signedIn />
+      </div>
     </>
   );
 }

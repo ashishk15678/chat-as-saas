@@ -12,41 +12,28 @@ export function Stat({
   className?: string;
 }) {
   return (
-    <div className={cn("panel-pad", className)}>
-      <p className="text-muted-foreground text-sm">{label}</p>
-      <p className="mt-2 text-3xl font-semibold tabular-nums tracking-[-0.02em]">
-        {value}
-      </p>
+    <div className={cn("panel-pad space-y-1", className)}>
+      <p className="eyebrow">{label}</p>
+      <p className="text-3xl font-semibold tabular-nums tracking-[-0.04em]">{value}</p>
       {hint && <p className="text-muted-foreground mt-1 text-xs">{hint}</p>}
     </div>
   );
 }
 
-/** Flat bar, no gradient. Used for quota and satisfaction alike. */
-export function Meter({
-  value,
-  max,
-  label,
-}: {
-  value: number;
-  max: number;
-  label?: string;
-}) {
+export function Meter({ value, max, label }: { value: number; max: number; label?: string }) {
   const pct = max === 0 ? 0 : Math.min(100, Math.round((value / max) * 100));
+  const danger = pct >= 90;
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       {label && (
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between text-xs">
           <span className="text-muted-foreground">{label}</span>
-          <span className="tabular-nums">{pct}%</span>
+          <span className={cn("font-medium tabular-nums", danger && "text-destructive")}>{pct}%</span>
         </div>
       )}
-      <div className="bg-secondary h-1.5 w-full overflow-hidden rounded-full">
+      <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
         <div
-          className={cn(
-            "h-full rounded-full transition-[width] duration-500",
-            pct >= 90 ? "bg-destructive" : "bg-primary",
-          )}
+          className={cn("h-full rounded-full transition-[width] duration-500", danger ? "bg-destructive" : "bg-accent")}
           style={{ width: `${pct}%` }}
         />
       </div>

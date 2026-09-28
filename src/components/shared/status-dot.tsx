@@ -1,52 +1,36 @@
 import { cn } from "@/lib/utils";
 
-const TONE = {
-  LIVE: "bg-success",
-  READY: "bg-success",
-  ACTIVE: "bg-success",
-  DRAFT: "bg-muted-foreground",
-  QUEUED: "bg-muted-foreground",
-  PAUSED: "bg-warning",
-  PROCESSING: "bg-warning",
-  PAST_DUE: "bg-warning",
-  FAILED: "bg-destructive",
-  CANCELLED: "bg-destructive",
-} as Record<string, string>;
+const CONFIG: Record<string, { dot: string; label: string; pill: string }> = {
+  LIVE:       { dot: "bg-success",           label: "Live",         pill: "bg-success/15 text-success" },
+  READY:      { dot: "bg-success",           label: "Ready",        pill: "bg-success/15 text-success" },
+  ACTIVE:     { dot: "bg-success",           label: "Active",       pill: "bg-success/15 text-success" },
+  DRAFT:      { dot: "bg-muted-foreground",  label: "Draft",        pill: "bg-secondary text-muted-foreground" },
+  QUEUED:     { dot: "bg-warning",           label: "Queued",       pill: "bg-warning/15 text-warning" },
+  PROCESSING: { dot: "bg-warning animate-pulse", label: "Processing", pill: "bg-warning/15 text-warning" },
+  PAUSED:     { dot: "bg-warning",           label: "Paused",       pill: "bg-warning/15 text-warning" },
+  PAST_DUE:   { dot: "bg-destructive",       label: "Payment due",  pill: "bg-destructive/10 text-destructive" },
+  FAILED:     { dot: "bg-destructive",       label: "Failed",       pill: "bg-destructive/10 text-destructive" },
+  CANCELLED:  { dot: "bg-muted-foreground",  label: "Cancelled",    pill: "bg-secondary text-muted-foreground" },
+};
 
-const WORD = {
-  LIVE: "Live",
-  DRAFT: "Draft",
-  PAUSED: "Paused",
-  QUEUED: "Queued",
-  PROCESSING: "Processing",
-  READY: "Ready",
-  FAILED: "Failed",
-  ACTIVE: "Active",
-  PAST_DUE: "Payment due",
-  CANCELLED: "Cancelled",
-} as Record<string, string>;
-
-export function StatusDot({
-  status,
-  className,
-}: {
-  status: string;
-  className?: string;
-}) {
+/** Inline dot + label */
+export function StatusDot({ status, className }: { status: string; className?: string }) {
+  const c = CONFIG[status] ?? { dot: "bg-muted-foreground", label: status, pill: "" };
   return (
-    <span
-      className={cn(
-        "text-muted-foreground inline-flex items-center gap-1.5 text-xs",
-        className,
-      )}
-    >
-      <span
-        className={cn(
-          "size-1.5 rounded-full",
-          TONE[status] ?? "bg-muted-foreground",
-        )}
-      />
-      {WORD[status] ?? status}
+    <span className={cn("inline-flex items-center gap-1.5 text-xs text-muted-foreground", className)}>
+      <span className={cn("size-1.5 rounded-full shrink-0", c.dot)} />
+      {c.label}
+    </span>
+  );
+}
+
+/** Pill badge variant */
+export function StatusPill({ status, className }: { status: string; className?: string }) {
+  const c = CONFIG[status] ?? { dot: "bg-muted-foreground", label: status, pill: "bg-secondary text-muted-foreground" };
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold", c.pill, className)}>
+      <span className={cn("size-1.5 rounded-full shrink-0", c.dot)} />
+      {c.label}
     </span>
   );
 }

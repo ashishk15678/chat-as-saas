@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 
-/** Empty screens are an invitation to act, so the action is required. */
 export function EmptyState({
   title,
   body,
@@ -13,15 +12,16 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "panel flex flex-col items-center gap-3 px-6 py-14 text-center",
-        className,
-      )}
-    >
-      <h3 className="text-base font-medium">{title}</h3>
-      <p className="text-muted-foreground max-w-sm text-sm">{body}</p>
-      <div className="pt-2">{action}</div>
+    <div className={cn("panel flex flex-col items-center gap-3 px-6 py-16 text-center", className)}>
+      {/* Decorative pixel grid */}
+      <div className="mb-1 grid grid-cols-3 gap-1.5 opacity-30">
+        {Array.from({ length: 9 }).map((_, i) => (
+          <span key={i} className="block size-2 rounded-sm bg-foreground" />
+        ))}
+      </div>
+      <h3 className="text-base font-semibold">{title}</h3>
+      <p className="text-muted-foreground max-w-sm text-sm leading-6">{body}</p>
+      {action && <div className="pt-2">{action}</div>}
     </div>
   );
 }

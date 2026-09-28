@@ -2,91 +2,82 @@
 
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { CheckoutButton } from "@/components/billing/checkout-button";
 import { PLAN_ORDER, PLANS, type PlanId } from "@/lib/constants";
 import { money } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-/** Used on the marketing page (signed out) and in billing (signed in). */
-export function PricingTable({
-  currentPlan,
-  signedIn = false,
-}: {
-  currentPlan?: PlanId;
-  signedIn?: boolean;
-}) {
+export function PricingTable({ currentPlan, signedIn = false }: { currentPlan?: PlanId; signedIn?: boolean }) {
   return (
     <div className="grid gap-4 lg:grid-cols-4">
       {PLAN_ORDER.map((id) => {
         const plan = PLANS[id];
         const current = currentPlan === id;
         const featured = id === "growth";
+
         return (
           <div
             key={id}
             className={cn(
-              "panel flex flex-col p-6",
-              featured && "border-primary ring-primary/15 ring-1",
+              "panel flex flex-col p-6 transition-[border-color]",
+              featured && "border-foreground",
               current && "bg-primary-muted/40",
+              !current && "hover:border-accent/50",
             )}
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-medium">{plan.name}</h3>
+              <h3 className="font-semibold">{plan.name}</h3>
               {featured && !current && (
-                <span className="bg-primary-muted text-accent-foreground rounded-md px-2 py-0.5 text-xs">
-                  Most chosen
-                </span>
+                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-foreground">Popular</span>
               )}
-              {current && (
-                <span className="text-muted-foreground text-xs">Your plan</span>
-              )}
+              {current && <span className="eyebrow text-accent">Current</span>}
             </div>
-            <p className="mt-4 text-3xl font-semibold tracking-[-0.02em]">
+
+            <p className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
               {money(plan.inr)}
-              {plan.inr > 0 && (
-                <span className="text-muted-foreground text-sm font-normal">
-                  {" "}
-                  /month
-                </span>
-              )}
+              {plan.inr > 0 && <span className="text-muted-foreground text-sm font-normal"> /mo</span>}
             </p>
-            <ul className="mt-6 flex-1 space-y-2.5">
+
+            <ul className="mt-5 flex-1 space-y-2.5">
               {plan.perks.map((perk) => (
-                <li key={perk} className="flex gap-2.5 text-sm">
-                  <Check className="text-primary mt-0.5 size-4 shrink-0" />
+                <li key={perk} className="flex items-start gap-2 text-xs">
+                  <Check className="mt-0.5 size-3 shrink-0 text-accent" />
                   <span className="text-muted-foreground">{perk}</span>
                 </li>
               ))}
             </ul>
-            <div className="pt-6">
+
+            <div className="mt-6">
               {current ? (
-                <Button disabled variant="outline" className="w-full">
+                <div className="rounded-lg border border-border px-4 py-2.5 text-center text-xs font-medium text-muted-foreground">
                   Current plan
-                </Button>
+                </div>
               ) : id === "free" ? (
-                <Button
-                  render={<Link href="/signup" />}
-                  variant="outline"
-                  className="press w-full"
+                <Link
+                  href="/signup"
+                  className="press block rounded-lg border border-border px-4 py-2.5 text-center text-xs font-semibold transition-colors hover:border-accent/60"
                 >
                   Start free
-                </Button>
+                </Link>
               ) : signedIn ? (
                 <CheckoutButton
                   plan={id as Exclude<PlanId, "free">}
                   label={`Move to ${plan.name}`}
-                  className="press w-full"
+                  className={cn("press w-full rounded-lg px-4 py-2.5 text-xs font-semibold", featured ? "bg-foreground text-background hover:bg-accent hover:text-foreground" : "border border-border hover:border-accent/60")}
                   variant={featured ? "default" : "outline"}
                 />
               ) : (
-                <Button
-                  render={<Link href={`/signup?plan=${id}`} />}
-                  variant={featured ? "default" : "outline"}
-                  className="press w-full"
+                <Link
+                  href={`/signup?plan=${id}`}
+                  className={cn(
+                    "press block rounded-lg px-4 py-2.5 text-center text-xs font-semibold transition-colors",
+                    featured
+                      ? "bg-foreground text-background hover:bg-accent hover:text-foreground"
+                      : "border border-border hover:border-accent/60",
+                  )}
                 >
                   Choose {plan.name}
-                </Button>
+                </Link>
               )}
             </div>
           </div>
