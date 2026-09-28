@@ -17,13 +17,15 @@ const SDK_URL = "https://checkout.razorpay.com/v1/checkout.js";
 
 function loadRazorpay(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (typeof window === "undefined") return reject(new Error("Not in browser"));
+    if (typeof window === "undefined")
+      return reject(new Error("Not in browser"));
     if (window.Razorpay) return resolve();
     const s = document.createElement("script");
     s.src = SDK_URL;
     s.async = true;
     s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Razorpay SDK failed to load. Check your network."));
+    s.onerror = () =>
+      reject(new Error("Razorpay SDK failed to load. Check your network."));
     document.head.appendChild(s);
   });
 }
@@ -51,7 +53,7 @@ export function CheckoutButton({
   const trpc = useTRPC();
   const [busy, setBusy] = useState(false);
 
-  const start   = useMutation(trpc.billing.startCheckout.mutationOptions());
+  const start = useMutation(trpc.billing.startCheckout.mutationOptions());
   const confirm = useMutation(trpc.billing.confirmCheckout.mutationOptions());
 
   async function handleClick() {
@@ -61,7 +63,9 @@ export function CheckoutButton({
     try {
       await loadRazorpay();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Could not load payment SDK.");
+      toast.error(
+        e instanceof Error ? e.message : "Could not load payment SDK.",
+      );
       setBusy(false);
       return;
     }
@@ -88,15 +92,23 @@ export function CheckoutButton({
         escape: true,
         ondismiss: () => setBusy(false),
       },
-      handler: async (res: { razorpay_payment_id: string; razorpay_subscription_id: string; razorpay_signature: string }) => {
+      handler: async (res: {
+        razorpay_payment_id: string;
+        razorpay_subscription_id: string;
+        razorpay_signature: string;
+      }) => {
         try {
           await confirm.mutateAsync({ plan, ...res });
-          toast.success(`You're on ${p.name}. New limits are live immediately.`);
+          toast.success(
+            `You're on ${p.name}. New limits are live immediately.`,
+          );
           // Hard reload so all server components re-fetch the updated plan
           window.location.href = "/dashboard/billing";
         } catch {
           // Webhook will apply the plan within ~60 s — don't alarm the user
-          toast.success("Payment received. Your plan will update within a minute.");
+          toast.success(
+            "Payment received. Your plan will update within a minute.",
+          );
           setBusy(false);
         }
       },
@@ -119,8 +131,19 @@ export function CheckoutButton({
       {busy ? (
         <span className="flex items-center gap-2">
           <svg className="size-3 animate-spin" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            />
           </svg>
           Opening checkout…
         </span>

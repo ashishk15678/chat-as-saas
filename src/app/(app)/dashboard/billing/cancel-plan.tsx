@@ -14,12 +14,16 @@ export function CancelPlan() {
   const cancel = useMutation(
     trpc.billing.cancel.mutationOptions({
       onSuccess: () => {
-        toast.success("Your plan ends at the close of this billing cycle. You keep full access until then.");
+        toast.success(
+          "Your plan ends at the close of this billing cycle. You keep full access until then.",
+        );
         setConfirming(false);
         router.refresh();
       },
       onError: (e) => {
-        toast.error(e.message ?? "Something went wrong. Try again or contact support.");
+        toast.error(
+          e.message ?? "Something went wrong. Try again or contact support.",
+        );
         setConfirming(false);
       },
     }),
@@ -40,8 +44,9 @@ export function CancelPlan() {
     <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
       <p className="text-sm font-medium text-destructive">Cancel your plan?</p>
       <p className="mt-1 text-xs text-muted-foreground leading-5">
-        You'll keep access until the end of the current billing cycle. After that your account
-        reverts to the free plan and chatbots over the free limit will be paused.
+        You'll keep access until the end of the current billing cycle. After
+        that your account reverts to the free plan and chatbots over the free
+        limit will be paused.
       </p>
       <div className="mt-4 flex gap-2">
         <button

@@ -24,7 +24,9 @@ export default async function BillingPage() {
       <div className="panel-pad space-y-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <p className="text-lg font-semibold tracking-[-0.03em]">{usage.limits.name} plan</p>
+            <p className="text-lg font-semibold tracking-[-0.03em]">
+              {usage.limits.name} plan
+            </p>
             <p className="text-muted-foreground mt-0.5 text-sm">{renewLabel}</p>
           </div>
           <StatusPill status={subscription?.status ?? "ACTIVE"} />

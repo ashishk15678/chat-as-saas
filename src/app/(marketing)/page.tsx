@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check, FileText, Globe, MessageSquare, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  FileText,
+  Globe,
+  MessageSquare,
+  ShieldCheck,
+} from "lucide-react";
 import { APP, PLANS, PLAN_ORDER } from "@/lib/constants";
 import { money } from "@/lib/format";
 
@@ -7,7 +15,10 @@ import { money } from "@/lib/format";
 function Pixels({ className = "" }: { className?: string }) {
   return (
     <div className={`pixel-deco ${className}`} aria-hidden>
-      <span /><span /><span /><span />
+      <span />
+      <span />
+      <span />
+      <span />
     </div>
   );
 }
@@ -22,28 +33,55 @@ function Tag({ children }: { children: React.ReactNode }) {
 }
 
 const FEATURES = [
-  { icon: FileText,      title: "Documents",             body: "PDF, DOCX, Markdown, TXT, CSV — up to 25 MB each. Stored directly, never passed through our server." },
-  { icon: Globe,         title: "Web pages",              body: "Paste a URL. The readable text is fetched, stripped and kept as its own source." },
-  { icon: MessageSquare, title: "Q&A pairs",              body: "Write the exact phrasing for the questions that matter most, paired with the right answers." },
-  { icon: ShieldCheck,   title: "Grounded only",          body: "When the answer isn't in your documents, the bot says so rather than guessing." },
+  {
+    icon: FileText,
+    title: "Documents",
+    body: "PDF, DOCX, Markdown, TXT, CSV — up to 25 MB each. Stored directly, never passed through our server.",
+  },
+  {
+    icon: Globe,
+    title: "Web pages",
+    body: "Paste a URL. The readable text is fetched, stripped and kept as its own source.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Q&A pairs",
+    body: "Write the exact phrasing for the questions that matter most, paired with the right answers.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Grounded only",
+    body: "When the answer isn't in your documents, the bot says so rather than guessing.",
+  },
 ];
 
 const STEPS = [
-  { n: "01", title: "Add what you already have",  body: "PDFs, help pages, FAQs, or plain text. Processing starts the moment a file lands." },
-  { n: "02", title: "Test it yourself first",     body: "The playground uses the same retrieval as the live widget — what you see is exactly what visitors get." },
-  { n: "03", title: "Paste one line of script",   body: "Under 15 KB, matches your site's theme, and only runs on the domains you allow." },
+  {
+    n: "01",
+    title: "Add what you already have",
+    body: "PDFs, help pages, FAQs, or plain text. Processing starts the moment a file lands.",
+  },
+  {
+    n: "02",
+    title: "Test it yourself first",
+    body: "The playground uses the same retrieval as the live widget — what you see is exactly what visitors get.",
+  },
+  {
+    n: "03",
+    title: "Paste one line of script",
+    body: "Under 15 KB, matches your site's theme, and only runs on the domains you allow.",
+  },
 ];
 
 const STATS = [
-  { value: "2.4×",  label: "faster answers for everyday questions" },
-  { value: "94%",   label: "of answers include a source citation" },
+  { value: "2.4×", label: "faster answers for everyday questions" },
+  { value: "94%", label: "of answers include a source citation" },
   { value: "1 day", label: "from sign-up to a live support widget" },
 ];
 
 export default function LandingPage() {
   return (
     <div className="bg-white text-[#0f0f0e]">
-
       {/* ══════════════════════════════════════════
           HERO — two-column grid separated by hairline
           Left: headline + CTA   Right: live product mockup
@@ -51,7 +89,6 @@ export default function LandingPage() {
       <section className="border-b border-border">
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid min-h-[80vh] lg:grid-cols-[1fr_1fr]">
-
             {/* ── Left ── */}
             <div className="flex flex-col justify-center border-b border-border py-16 lg:border-b-0 lg:border-r lg:py-24 lg:pr-14">
               <div className="mb-5 flex items-center gap-3">
@@ -99,8 +136,12 @@ export default function LandingPage() {
                       <MessageSquare className="size-3.5" />
                     </div>
                     <div>
-                      <p className="text-[12px] font-semibold">Northstar assistant</p>
-                      <p className="text-[10px] text-muted-foreground">Grounded in 24 sources</p>
+                      <p className="text-[12px] font-semibold">
+                        Northstar assistant
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        Grounded in 24 sources
+                      </p>
                     </div>
                   </div>
                   <span className="flex items-center gap-1.5 rounded-full bg-[#dcfce7] px-2.5 py-1 text-[10px] font-semibold text-[#16a34a]">
@@ -118,7 +159,8 @@ export default function LandingPage() {
                   </div>
                   <div className="flex justify-start">
                     <div className="max-w-[82%] rounded-2xl rounded-bl-sm border border-border bg-white px-3.5 py-2.5 text-[11px] leading-5">
-                      Client meals are reimbursable up to ₹2,500 per person with a receipt attached to the expense report.
+                      Client meals are reimbursable up to ₹2,500 per person with
+                      a receipt attached to the expense report.
                       <div className="mt-2 flex items-center gap-1 text-[9px] font-medium text-[#4f46e5]">
                         <FileText className="size-2.5" />
                         Travel &amp; Expenses Policy · p.14
@@ -132,7 +174,8 @@ export default function LandingPage() {
                   </div>
                   <div className="flex justify-start">
                     <div className="max-w-[82%] rounded-2xl rounded-bl-sm border border-border bg-white px-3.5 py-2.5 text-[11px] leading-5">
-                      Up to 3 days per week after completing 90 days with the company.
+                      Up to 3 days per week after completing 90 days with the
+                      company.
                       <div className="mt-2 flex items-center gap-1 text-[9px] font-medium text-[#4f46e5]">
                         <FileText className="size-2.5" />
                         Employee Handbook · p.7
@@ -143,14 +186,15 @@ export default function LandingPage() {
 
                 {/* Input bar */}
                 <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5">
-                  <span className="flex-1 text-[11px] text-muted-foreground">Ask anything…</span>
+                  <span className="flex-1 text-[11px] text-muted-foreground">
+                    Ask anything…
+                  </span>
                   <div className="flex size-6 items-center justify-center rounded-lg bg-[#4f46e5] text-white">
                     <ArrowRight className="size-3" />
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
@@ -160,9 +204,13 @@ export default function LandingPage() {
           ══════════════════════════════════════════ */}
       <section className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted-foreground">Trusted by teams who ship</p>
+          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted-foreground">
+            Trusted by teams who ship
+          </p>
           <div className="flex flex-wrap items-center gap-6 text-[11px] font-semibold text-muted-foreground">
-            <span className="text-sm font-bold tracking-[-0.04em] text-foreground">northstar</span>
+            <span className="text-sm font-bold tracking-[-0.04em] text-foreground">
+              northstar
+            </span>
             <span className="italic">fieldnotes</span>
             <span>atlas / co</span>
             <span>makerspace</span>
@@ -178,7 +226,9 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-5">
           {/* Section header */}
           <div className="border-b border-border py-10">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">How it works</p>
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">
+              How it works
+            </p>
             <h2 className="max-w-[520px] text-3xl font-semibold sm:text-4xl">
               From your docs to a live support chat in one afternoon.
             </h2>
@@ -187,10 +237,17 @@ export default function LandingPage() {
           {/* 3-col grid separated by border lines */}
           <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
             {STEPS.map((s) => (
-              <div key={s.n} className="flex flex-col gap-4 px-0 py-10 md:px-8 first:md:pl-0 last:md:pr-0">
-                <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">Step {s.n}</span>
+              <div
+                key={s.n}
+                className="flex flex-col gap-4 px-0 py-10 md:px-8 first:md:pl-0 last:md:pr-0"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">
+                  Step {s.n}
+                </span>
                 <h3 className="text-base font-semibold">{s.title}</h3>
-                <p className="text-sm leading-6 text-muted-foreground">{s.body}</p>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {s.body}
+                </p>
               </div>
             ))}
           </div>
@@ -210,12 +267,16 @@ export default function LandingPage() {
                 It only knows what you give it.
               </h2>
               <p className="mt-5 max-w-[360px] text-sm leading-7 text-muted-foreground">
-                Every answer traces back to the exact document it came from.
-                No hallucinations. No guessing. When the answer isn't in your
+                Every answer traces back to the exact document it came from. No
+                hallucinations. No guessing. When the answer isn't in your
                 sources, the bot says so.
               </p>
               <div className="mt-8 flex flex-col gap-3 text-sm">
-                {["Citations on every answer", "Private by default", "Updates without retraining"].map((t) => (
+                {[
+                  "Citations on every answer",
+                  "Private by default",
+                  "Updates without retraining",
+                ].map((t) => (
                   <span key={t} className="flex items-center gap-2.5">
                     <span className="flex size-5 items-center justify-center rounded-full bg-[#eef2ff]">
                       <Check className="size-3 text-[#4f46e5]" />
@@ -229,12 +290,17 @@ export default function LandingPage() {
             {/* Right — 2×2 feature cards */}
             <div className="grid grid-cols-2 divide-x divide-y divide-border">
               {FEATURES.map(({ icon: Icon, title, body }) => (
-                <div key={title} className="flex flex-col gap-3 p-6 transition-colors hover:bg-surface">
+                <div
+                  key={title}
+                  className="flex flex-col gap-3 p-6 transition-colors hover:bg-surface"
+                >
                   <div className="flex size-9 items-center justify-center rounded-xl bg-[#eef2ff]">
                     <Icon className="size-4 text-[#4f46e5]" />
                   </div>
                   <h3 className="text-sm font-semibold">{title}</h3>
-                  <p className="text-xs leading-5 text-muted-foreground">{body}</p>
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {body}
+                  </p>
                 </div>
               ))}
             </div>
@@ -248,10 +314,17 @@ export default function LandingPage() {
       <section className="border-b border-border bg-surface">
         <div className="mx-auto grid max-w-6xl divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0 px-5">
           {STATS.map((s) => (
-            <div key={s.value} className="flex flex-col gap-3 py-12 md:px-8 first:md:pl-0 last:md:pr-0">
+            <div
+              key={s.value}
+              className="flex flex-col gap-3 py-12 md:px-8 first:md:pl-0 last:md:pr-0"
+            >
               <Pixels />
-              <p className="text-4xl font-semibold tracking-[-0.06em]">{s.value}</p>
-              <p className="max-w-[180px] text-xs leading-5 text-muted-foreground">{s.label}</p>
+              <p className="text-4xl font-semibold tracking-[-0.06em]">
+                {s.value}
+              </p>
+              <p className="max-w-[180px] text-xs leading-5 text-muted-foreground">
+                {s.label}
+              </p>
             </div>
           ))}
         </div>
@@ -270,7 +343,8 @@ export default function LandingPage() {
             Start small. Grow with your knowledge.
           </h2>
           <p className="mb-10 text-sm text-muted-foreground">
-            Monthly billing. Cancel any time from the dashboard. All prices include GST.
+            Monthly billing. Cancel any time from the dashboard. All prices
+            include GST.
           </p>
 
           <div className="grid gap-4 lg:grid-cols-4">
@@ -297,7 +371,10 @@ export default function LandingPage() {
                   <p className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
                     {money(plan.inr)}
                     {plan.inr > 0 && (
-                      <span className="text-sm font-normal text-muted-foreground"> /mo</span>
+                      <span className="text-sm font-normal text-muted-foreground">
+                        {" "}
+                        /mo
+                      </span>
                     )}
                   </p>
                   <ul className="mt-5 flex-1 space-y-2.5">
@@ -346,7 +423,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }

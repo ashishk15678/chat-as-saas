@@ -11,16 +11,19 @@ import { signOut } from "@/lib/auth-client";
 function Px() {
   return (
     <div className="pixel-deco shrink-0">
-      <span /><span /><span /><span />
+      <span />
+      <span />
+      <span />
+      <span />
     </div>
   );
 }
 
 const NAV = [
-  { href: "/dashboard",          label: "Overview",       icon: LayoutGrid, exact: true },
-  { href: "/dashboard/chatbots", label: "Chatbots",       icon: Bot },
-  { href: "/dashboard/billing",  label: "Plan & usage",   icon: CreditCard },
-  { href: "/dashboard/settings", label: "Settings",       icon: Settings },
+  { href: "/dashboard", label: "Overview", icon: LayoutGrid, exact: true },
+  { href: "/dashboard/chatbots", label: "Chatbots", icon: Bot },
+  { href: "/dashboard/billing", label: "Plan & usage", icon: CreditCard },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -36,9 +39,14 @@ export function Sidebar() {
   return (
     <aside className="hidden w-56 shrink-0 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
       {/* Logo */}
-      <Link href="/dashboard" className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4">
+      <Link
+        href="/dashboard"
+        className="flex h-14 items-center gap-2.5 border-b border-sidebar-border px-4"
+      >
         <Px />
-        <span className="text-[15px] font-semibold tracking-[-0.04em]">{APP.name}</span>
+        <span className="text-[15px] font-semibold tracking-[-0.04em]">
+          {APP.name}
+        </span>
       </Link>
 
       {/* Nav */}

@@ -7,7 +7,8 @@ import { CreateChatbot } from "@/components/dashboard/create-chatbot";
 import { count, when } from "@/lib/format";
 
 export default async function OverviewPage() {
-  const { usage, bots, conversations, messages, recent } = await api.chatbot.overview();
+  const { usage, bots, conversations, messages, recent } =
+    await api.chatbot.overview();
 
   return (
     <>
@@ -19,16 +20,31 @@ export default async function OverviewPage() {
 
       {/* Stats row */}
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat label="Chatbots" value={count(bots)} hint={`${usage.limits.bots} on ${usage.limits.name}`} />
-        <Stat label="Conversations" value={count(conversations)} hint="Started this month" />
-        <Stat label="Messages answered" value={count(messages)} hint="Counts toward quota" />
+        <Stat
+          label="Chatbots"
+          value={count(bots)}
+          hint={`${usage.limits.bots} on ${usage.limits.name}`}
+        />
+        <Stat
+          label="Conversations"
+          value={count(conversations)}
+          hint="Started this month"
+        />
+        <Stat
+          label="Messages answered"
+          value={count(messages)}
+          hint="Counts toward quota"
+        />
       </div>
 
       {/* Usage meters */}
       <div className="panel-pad mt-4 space-y-4">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold">This month</p>
-          <Link href="/dashboard/billing" className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
+          <Link
+            href="/dashboard/billing"
+            className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+          >
             View plan →
           </Link>
         </div>
@@ -64,12 +80,16 @@ export default async function OverviewPage() {
                   className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-surface"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm">{c.messages[0]?.content ?? "Conversation started"}</p>
+                    <p className="truncate text-sm">
+                      {c.messages[0]?.content ?? "Conversation started"}
+                    </p>
                     <p className="text-muted-foreground mt-0.5 text-xs">
                       {c.chatbot.name} · {c.origin ?? "direct"}
                     </p>
                   </div>
-                  <span className="text-muted-foreground shrink-0 text-xs">{when(c.lastAt)}</span>
+                  <span className="text-muted-foreground shrink-0 text-xs">
+                    {when(c.lastAt)}
+                  </span>
                 </Link>
               </li>
             ))}

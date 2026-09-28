@@ -9,17 +9,22 @@ function PixelLogo() {
   return (
     <div className="flex items-center gap-2.5">
       <div className="pixel-deco">
-        <span /><span /><span /><span />
+        <span />
+        <span />
+        <span />
+        <span />
       </div>
-      <span className="text-[15px] font-semibold tracking-[-0.04em]">{APP.name}</span>
+      <span className="text-[15px] font-semibold tracking-[-0.04em]">
+        {APP.name}
+      </span>
     </div>
   );
 }
 
 const LINKS = [
-  { href: "/#how",     label: "How it works" },
+  { href: "/#how", label: "How it works" },
   { href: "/#pricing", label: "Pricing" },
-  { href: "/docs",     label: "Docs" },
+  { href: "/docs", label: "Docs" },
 ];
 
 export function SiteNav() {
@@ -80,7 +85,12 @@ export function SiteNav() {
               </Link>
             ))}
             <div className="mt-2 border-t border-border pt-2">
-              <Link href="/login" className="block rounded-lg px-3 py-2.5 text-sm hover:bg-surface">Sign in</Link>
+              <Link
+                href="/login"
+                className="block rounded-lg px-3 py-2.5 text-sm hover:bg-surface"
+              >
+                Sign in
+              </Link>
             </div>
           </div>
         </div>

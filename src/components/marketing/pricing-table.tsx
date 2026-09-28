@@ -7,7 +7,13 @@ import { PLAN_ORDER, PLANS, type PlanId } from "@/lib/constants";
 import { money } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-export function PricingTable({ currentPlan, signedIn = false }: { currentPlan?: PlanId; signedIn?: boolean }) {
+export function PricingTable({
+  currentPlan,
+  signedIn = false,
+}: {
+  currentPlan?: PlanId;
+  signedIn?: boolean;
+}) {
   return (
     <div className="grid gap-4 lg:grid-cols-4">
       {PLAN_ORDER.map((id) => {
@@ -28,14 +34,21 @@ export function PricingTable({ currentPlan, signedIn = false }: { currentPlan?: 
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">{plan.name}</h3>
               {featured && !current && (
-                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-foreground">Popular</span>
+                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-foreground">
+                  Popular
+                </span>
               )}
               {current && <span className="eyebrow text-accent">Current</span>}
             </div>
 
             <p className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
               {money(plan.inr)}
-              {plan.inr > 0 && <span className="text-muted-foreground text-sm font-normal"> /mo</span>}
+              {plan.inr > 0 && (
+                <span className="text-muted-foreground text-sm font-normal">
+                  {" "}
+                  /mo
+                </span>
+              )}
             </p>
 
             <ul className="mt-5 flex-1 space-y-2.5">
@@ -63,7 +76,12 @@ export function PricingTable({ currentPlan, signedIn = false }: { currentPlan?: 
                 <CheckoutButton
                   plan={id as Exclude<PlanId, "free">}
                   label={`Move to ${plan.name}`}
-                  className={cn("press w-full rounded-lg px-4 py-2.5 text-xs font-semibold", featured ? "bg-foreground text-background hover:bg-accent hover:text-foreground" : "border border-border hover:border-accent/60")}
+                  className={cn(
+                    "press w-full rounded-lg px-4 py-2.5 text-xs font-semibold",
+                    featured
+                      ? "bg-foreground text-background hover:bg-accent hover:text-foreground"
+                      : "border border-border hover:border-accent/60",
+                  )}
                   variant={featured ? "default" : "outline"}
                 />
               ) : (

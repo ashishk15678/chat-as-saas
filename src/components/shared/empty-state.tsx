@@ -12,7 +12,12 @@ export function EmptyState({
   className?: string;
 }) {
   return (
-    <div className={cn("panel flex flex-col items-center gap-3 px-6 py-16 text-center", className)}>
+    <div
+      className={cn(
+        "panel flex flex-col items-center gap-3 px-6 py-16 text-center",
+        className,
+      )}
+    >
       {/* Decorative pixel grid */}
       <div className="mb-1 grid grid-cols-3 gap-1.5 opacity-30">
         {Array.from({ length: 9 }).map((_, i) => (

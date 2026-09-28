@@ -33,13 +33,20 @@ export default async function ChatbotsPage() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <span className="size-3 shrink-0 rounded-md" style={{ background: b.accent }} aria-hidden />
+                  <span
+                    className="size-3 shrink-0 rounded-md"
+                    style={{ background: b.accent }}
+                    aria-hidden
+                  />
                   <h2 className="font-semibold tracking-[-0.02em]">{b.name}</h2>
                 </div>
                 <StatusPill status={b.status} />
               </div>
               <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>{count(b._count.sources)} sources · {count(b._count.conversations)} conversations</span>
+                <span>
+                  {count(b._count.sources)} sources ·{" "}
+                  {count(b._count.conversations)} conversations
+                </span>
                 <span>{when(b.updatedAt)}</span>
               </div>
             </Link>
