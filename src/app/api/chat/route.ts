@@ -10,7 +10,9 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const cors = (origin: string) => ({
-  "Access-Control-Allow-Origin": origin,
+  // Use the specific origin when present (allows future credentialed requests),
+  // fall back to * for direct API calls (curl, Postman, etc.).
+  "Access-Control-Allow-Origin": origin || "*",
   "Access-Control-Allow-Headers": "content-type, x-visitor-hash",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   Vary: "Origin",

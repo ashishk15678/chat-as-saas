@@ -7,6 +7,17 @@
  */
 export const runtime = "edge";
 
+export function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin":  "*",
+      "Access-Control-Allow-Methods": "GET, OPTIONS",
+      "Cross-Origin-Resource-Policy": "cross-origin",
+    },
+  });
+}
+
 export function GET() {
   const script = `(function () {
   'use strict';
@@ -129,8 +140,11 @@ export function GET() {
 
   return new Response(script, {
     headers: {
-      "Content-Type": "application/javascript; charset=utf-8",
-      "Cache-Control": "public, max-age=300, stale-while-revalidate=3600",
+      "Content-Type":                  "application/javascript; charset=utf-8",
+      "Access-Control-Allow-Origin":   "*",
+      "Access-Control-Allow-Methods":  "GET, OPTIONS",
+      "Cross-Origin-Resource-Policy":  "cross-origin",
+      "Cache-Control":                 "public, max-age=300, stale-while-revalidate=3600",
     },
   });
 }
