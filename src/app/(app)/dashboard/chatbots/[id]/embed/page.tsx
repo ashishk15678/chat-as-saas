@@ -34,7 +34,7 @@ window.chatlineSettings = { visitorId: user.id, visitorHash: hash };`;
   return (
     <div className="max-w-2xl space-y-8">
       <section className="space-y-3">
-        <h2 className="font-medium">Add it to your site</h2>
+        <h4 className="font-medium">Add it to your site</h4>
         <p className="text-muted-foreground text-sm leading-relaxed">
           Paste this before the closing body tag on any page. The bubble appears
           on the {bot.position} and follows your visitor&apos;s light or dark

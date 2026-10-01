@@ -41,20 +41,15 @@ const s3Client = new S3Client({
 
 export async function presignPut(
   key: string,
-  contentType: string,
+  _contentType: string,
   expiresIn = 300,
 ) {
   const bucket = process.env.S3_BUCKET!;
-
-  const command = new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    ContentType: contentType, // Automatically signed into the request headers!
-  });
-
-  // Generate the official pre-signed URL securely
+  // Do NOT include ContentType in the command — it gets baked into the
+  // signature and any mismatch (e.g. "text/plain" vs "text/plain; charset=utf-8")
+  // causes a SignatureDoesNotMatch 403 that the browser reports as "Load failed".
+  const command = new PutObjectCommand({ Bucket: bucket, Key: key });
   const url = await getSignedUrl(s3Client, command, { expiresIn });
-
   return { url, key, expiresIn };
 }
 

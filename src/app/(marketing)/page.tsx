@@ -1,428 +1,525 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+import { AsciiFire } from "@/components/ascii-fire";
+import { GrainInterludes, GrainQuote } from "@/components/grain-interludes";
 import {
-  ArrowRight,
   ArrowUpRight,
+  AudioLines,
   Check,
-  FileText,
-  Globe,
-  MessageSquare,
-  ShieldCheck,
+  ChevronDown,
+  CirclePlay,
+  Command,
+  FileAudio,
+  Headphones,
+  Mic,
+  Pause,
+  Play,
+  Quote,
+  Sparkles,
+  Volume2,
+  WandSparkles,
+  Zap,
 } from "lucide-react";
-import { APP, PLANS, PLAN_ORDER } from "@/lib/constants";
-import { money } from "@/lib/format";
 
-/* ─── Pixel 2×2 decoration (green squares, Proofmode signature) ─── */
-function Pixels({ className = "" }: { className?: string }) {
-  return (
-    <div className={`pixel-deco ${className}`} aria-hidden>
-      <span />
-      <span />
-      <span />
-      <span />
-    </div>
-  );
-}
-
-/* ─── Eyebrow tag like "CASE STUDY" in Proofmode ─── */
-function Tag({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="inline-block rounded-full border border-border bg-secondary px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.14em] text-muted-foreground">
-      {children}
-    </span>
-  );
-}
-
-const FEATURES = [
+const features = [
   {
-    icon: FileText,
-    title: "Documents",
-    body: "PDF, DOCX, Markdown, TXT, CSV — up to 25 MB each. Stored directly, never passed through our server.",
+    icon: AudioLines,
+    title: "Voice intelligence",
+    body: "Turn every conversation into a searchable, usable source of truth.",
   },
   {
-    icon: Globe,
-    title: "Web pages",
-    body: "Paste a URL. The readable text is fetched, stripped and kept as its own source.",
+    icon: WandSparkles,
+    title: "Instant production",
+    body: "Clean up, summarize, and shape raw audio into something your team can use.",
   },
   {
-    icon: MessageSquare,
-    title: "Q&A pairs",
-    body: "Write the exact phrasing for the questions that matter most, paired with the right answers.",
+    icon: Command,
+    title: "One prompt away",
+    body: "Ask anything about your calls, clips, and customer conversations.",
   },
   {
-    icon: ShieldCheck,
-    title: "Grounded only",
-    body: "When the answer isn't in your documents, the bot says so rather than guessing.",
+    icon: FileAudio,
+    title: "Audio, organized",
+    body: "Every recording, transcript, and insight in one calm, focused workspace.",
+  },
+  {
+    icon: Sparkles,
+    title: "AI that listens",
+    body: "Find the moments that matter without scrubbing through an hour of audio.",
+  },
+  {
+    icon: Zap,
+    title: "Ship faster",
+    body: "Move from a raw recording to a polished asset in a few seconds.",
   },
 ];
 
-const STEPS = [
-  {
-    n: "01",
-    title: "Add what you already have",
-    body: "PDFs, help pages, FAQs, or plain text. Processing starts the moment a file lands.",
-  },
-  {
-    n: "02",
-    title: "Test it yourself first",
-    body: "The playground uses the same retrieval as the live widget — what you see is exactly what visitors get.",
-  },
-  {
-    n: "03",
-    title: "Paste one line of script",
-    body: "Under 15 KB, matches your site's theme, and only runs on the domains you allow.",
-  },
+const faqs = [
+  "What is Sonora?",
+  "How does the audio AI work?",
+  "Can I bring my own recordings?",
+  "Who is Sonora built for?",
 ];
 
-const STATS = [
-  { value: "2.4×", label: "faster answers for everyday questions" },
-  { value: "94%", label: "of answers include a source citation" },
-  { value: "1 day", label: "from sign-up to a live support widget" },
-];
+export default function Page() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
-export default function LandingPage() {
   return (
-    <div className="bg-white text-[#0f0f0e]">
-      {/* ══════════════════════════════════════════
-          HERO — two-column grid separated by hairline
-          Left: headline + CTA   Right: live product mockup
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="grid min-h-[80vh] lg:grid-cols-[1fr_1fr]">
-            {/* ── Left ── */}
-            <div className="flex flex-col justify-center border-b border-border py-16 lg:border-b-0 lg:border-r lg:py-24 lg:pr-14">
-              <div className="mb-5 flex items-center gap-3">
-                <Pixels />
-                <Tag>AI-powered support</Tag>
-              </div>
-
-              <h1 className="max-w-[480px] text-5xl font-semibold leading-[.96] tracking-[-0.06em] sm:text-6xl lg:text-[4.25rem]">
-                Make your docs{" "}
-                <span className="text-[#4f46e5]">do&nbsp;more.</span>
-              </h1>
-
-              <p className="mt-6 max-w-[400px] text-sm leading-6 text-muted-foreground">
-                {APP.name} turns scattered company knowledge into a clear,
-                useful assistant that answers questions with sources attached —
-                ready in minutes, not weeks.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link href="/signup" className="btn-primary press">
-                  Start free <ArrowRight className="size-3.5" />
-                </Link>
-                <Link href="/docs" className="btn-secondary press">
-                  Read the docs
-                </Link>
-              </div>
-
-              <p className="mt-5 text-xs text-muted-foreground">
-                100 messages / month on the free plan. No credit card needed.
-              </p>
-            </div>
-
-            {/* ── Right — product mockup ── */}
-            <div className="relative flex items-center justify-center overflow-hidden bg-surface py-12 lg:py-0">
-              {/* Corner pixel decorations */}
-              <Pixels className="absolute left-5 top-5" />
-              <Pixels className="absolute bottom-5 right-5" />
-
-              {/* Glass card mockup */}
-              <div className="glass mx-6 w-full max-w-[360px] p-5">
-                {/* Header */}
-                <div className="mb-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-[#4f46e5] text-white shadow-md">
-                      <MessageSquare className="size-3.5" />
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-semibold">
-                        Northstar assistant
-                      </p>
-                      <p className="text-[10px] text-muted-foreground">
-                        Grounded in 24 sources
-                      </p>
-                    </div>
-                  </div>
-                  <span className="flex items-center gap-1.5 rounded-full bg-[#dcfce7] px-2.5 py-1 text-[10px] font-semibold text-[#16a34a]">
-                    <span className="size-1.5 rounded-full bg-[#16a34a]" />
-                    Live
-                  </span>
-                </div>
-
-                {/* Fake chat */}
-                <div className="space-y-2.5">
-                  <div className="flex justify-end">
-                    <div className="max-w-[76%] rounded-2xl rounded-br-sm bg-[#0f0f0e] px-3.5 py-2.5 text-[11px] leading-5 text-white">
-                      What's our policy on client meals?
-                    </div>
-                  </div>
-                  <div className="flex justify-start">
-                    <div className="max-w-[82%] rounded-2xl rounded-bl-sm border border-border bg-white px-3.5 py-2.5 text-[11px] leading-5">
-                      Client meals are reimbursable up to ₹2,500 per person with
-                      a receipt attached to the expense report.
-                      <div className="mt-2 flex items-center gap-1 text-[9px] font-medium text-[#4f46e5]">
-                        <FileText className="size-2.5" />
-                        Travel &amp; Expenses Policy · p.14
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-end">
-                    <div className="max-w-[76%] rounded-2xl rounded-br-sm bg-[#0f0f0e] px-3.5 py-2.5 text-[11px] leading-5 text-white">
-                      How many days for WFH per week?
-                    </div>
-                  </div>
-                  <div className="flex justify-start">
-                    <div className="max-w-[82%] rounded-2xl rounded-bl-sm border border-border bg-white px-3.5 py-2.5 text-[11px] leading-5">
-                      Up to 3 days per week after completing 90 days with the
-                      company.
-                      <div className="mt-2 flex items-center gap-1 text-[9px] font-medium text-[#4f46e5]">
-                        <FileText className="size-2.5" />
-                        Employee Handbook · p.7
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Input bar */}
-                <div className="mt-4 flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2.5">
-                  <span className="flex-1 text-[11px] text-muted-foreground">
-                    Ask anything…
-                  </span>
-                  <div className="flex size-6 items-center justify-center rounded-lg bg-[#4f46e5] text-white">
-                    <ArrowRight className="size-3" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <main className="site-shell">
+      <nav className="nav-bar" aria-label="Main navigation">
+        <a className="wordmark" href="#top" aria-label="Sonora home">
+          <span className="wordmark-dot" />
+          Sonora<span className="wordmark-ai">.ai</span>
+        </a>
+        <div className="nav-links">
+          <a href="#product">Product</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#company">Company</a>
         </div>
-      </section>
+        <div className="nav-actions">
+          <a href="/login">Log in</a>
+          <a className="nav-cta" href="#demo">
+            Join waitlist <ArrowUpRight aria-hidden="true" />
+          </a>
+        </div>
+        <button className="mobile-menu" aria-label="Open menu">
+          <span />
+          <span />
+        </button>
+      </nav>
 
-      {/* ══════════════════════════════════════════
-          TRUST BAR
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
-          <p className="text-[10px] font-bold uppercase tracking-[.18em] text-muted-foreground">
-            Trusted by teams who ship
+      <section className="hero" id="top">
+        <div className="hero-copy">
+          <AsciiFire />
+          <p className="eyebrow">
+            Audio intelligence for the way you work <span>↗</span>
           </p>
-          <div className="flex flex-wrap items-center gap-6 text-[11px] font-semibold text-muted-foreground">
-            <span className="text-sm font-bold tracking-[-0.04em] text-foreground">
-              northstar
-            </span>
-            <span className="italic">fieldnotes</span>
-            <span>atlas / co</span>
-            <span>makerspace</span>
-            <span>orbit labs</span>
-          </div>
+          <h1>
+            Make every
+            <br />
+            <em>conversation</em>
+            <br />
+            count.
+          </h1>
+          <p className="hero-description">
+            Sonora turns spoken ideas into clear, useful work. Record,
+            understand, and create with an AI that actually listens.
+          </p>
+          <a className="button button-dark" href="#demo">
+            Start listening <ArrowUpRight aria-hidden="true" />
+          </a>
+          <p className="hero-note">No credit card required</p>
         </div>
+        <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
       </section>
 
-      {/* ══════════════════════════════════════════
-          STEPS — 3-col grid with dividers (Proofmode "ecosystem" section)
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border" id="how">
-        <div className="mx-auto max-w-6xl px-5">
-          {/* Section header */}
-          <div className="border-b border-border py-10">
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">
-              How it works
-            </p>
-            <h2 className="max-w-[520px] text-3xl font-semibold sm:text-4xl">
-              From your docs to a live support chat in one afternoon.
-            </h2>
-          </div>
-
-          {/* 3-col grid separated by border lines */}
-          <div className="grid divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-            {STEPS.map((s) => (
-              <div
-                key={s.n}
-                className="flex flex-col gap-4 px-0 py-10 md:px-8 first:md:pl-0 last:md:pr-0"
-              >
-                <span className="text-[10px] font-bold uppercase tracking-[.18em] text-[#4f46e5]">
-                  Step {s.n}
-                </span>
-                <h3 className="text-base font-semibold">{s.title}</h3>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {s.body}
-                </p>
-              </div>
-            ))}
-          </div>
+      <div className="logo-strip" aria-label="Trusted by teams at">
+        <span>northstar</span>
+        <span>notion</span>
+        <span>Linear</span>
+        <span>loom</span>
+        <span>ARC</span>
+        <span>superhuman</span>
+      </div>
+      <section className="intro section-rule" id="product">
+        <div>
+          <p className="eyebrow">Why Sonora?</p>
+          <h2>
+            Less listening.
+            <br />
+            More doing.
+          </h2>
         </div>
+        <p className="intro-copy">
+          Between client calls, team syncs, and the ideas that happen in
+          between, your best work is already spoken. Sonora captures the signal,
+          removes the noise, and gives you back the good part.
+        </p>
       </section>
-
-      {/* ══════════════════════════════════════════
-          FEATURES — left text + right 2×2 cards
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="grid gap-0 lg:grid-cols-[1fr_1fr]">
-            {/* Left */}
-            <div className="border-b border-border py-14 lg:border-b-0 lg:border-r lg:py-20 lg:pr-14">
-              <Tag>Knowledge sources</Tag>
-              <h2 className="mt-5 max-w-[340px] text-3xl font-semibold sm:text-4xl">
-                It only knows what you give it.
-              </h2>
-              <p className="mt-5 max-w-[360px] text-sm leading-7 text-muted-foreground">
-                Every answer traces back to the exact document it came from. No
-                hallucinations. No guessing. When the answer isn't in your
-                sources, the bot says so.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 text-sm">
-                {[
-                  "Citations on every answer",
-                  "Private by default",
-                  "Updates without retraining",
-                ].map((t) => (
-                  <span key={t} className="flex items-center gap-2.5">
-                    <span className="flex size-5 items-center justify-center rounded-full bg-[#eef2ff]">
-                      <Check className="size-3 text-[#4f46e5]" />
-                    </span>
-                    {t}
-                  </span>
-                ))}
-              </div>
+      <section className="feature-grid" id="solutions">
+        {features.map(({ icon: Icon, title, body }, index) => (
+          <article className="feature-card" key={title}>
+            <div className="feature-icon">
+              <Icon aria-hidden="true" />
             </div>
-
-            {/* Right — 2×2 feature cards */}
-            <div className="grid grid-cols-2 divide-x divide-y divide-border">
-              {FEATURES.map(({ icon: Icon, title, body }) => (
-                <div
-                  key={title}
-                  className="flex flex-col gap-3 p-6 transition-colors hover:bg-surface"
-                >
-                  <div className="flex size-9 items-center justify-center rounded-xl bg-[#eef2ff]">
-                    <Icon className="size-4 text-[#4f46e5]" />
-                  </div>
-                  <h3 className="text-sm font-semibold">{title}</h3>
-                  <p className="text-xs leading-5 text-muted-foreground">
-                    {body}
-                  </p>
-                </div>
-              ))}
+            <div>
+              <p className="feature-number">0{index + 1}</p>
+              <h3>{title}</h3>
+              <p>{body}</p>
             </div>
+          </article>
+        ))}
+      </section>
+      <GrainInterludes />
+      <section className="split-section section-rule">
+        <div className="split-copy">
+          <p className="eyebrow">People + AI</p>
+          <h2>
+            Say it once.
+            <br />
+            <em>Ship it</em> forever.
+          </h2>
+          <p>
+            Sonora makes the distance between a thought and a finished thing
+            feel wonderfully small.
+          </p>
+          <ul className="check-list">
+            <li>
+              <Check aria-hidden="true" /> Capture meetings, notes, and
+              spontaneous ideas
+            </li>
+            <li>
+              <Check aria-hidden="true" /> Turn conversations into drafts and
+              decisions
+            </li>
+            <li>
+              <Check aria-hidden="true" /> Search your entire audio memory in
+              plain English
+            </li>
+          </ul>
+        </div>
+        <AudioVisualizer />
+      </section>
+      <WorkflowShowcase />
+      <GrainQuote />
+      <Testimonials />
+      <section className="numbers section-rule" id="pricing">
+        <p className="eyebrow">By the numbers</p>
+        <h2>
+          The math behind
+          <br />
+          better conversations.
+        </h2>
+        <div className="number-list">
+          <div>
+            <span>Average time saved per call</span>
+            <strong>
+              42<small>min</small>
+            </strong>
+          </div>
+          <div>
+            <span>Faster from idea to first draft</span>
+            <strong>6×</strong>
+          </div>
+          <div>
+            <span>Words understood, not just transcribed</span>
+            <strong>∞</strong>
+          </div>
+          <div>
+            <span>Meetings you never need to re-listen to</span>
+            <strong>100%</strong>
           </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════
-          STATS — 3-col split with pixel decorations
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0 px-5">
-          {STATS.map((s) => (
-            <div
-              key={s.value}
-              className="flex flex-col gap-3 py-12 md:px-8 first:md:pl-0 last:md:pr-0"
+      <section className="faq section-rule" id="company">
+        <p className="eyebrow">Learn more</p>
+        <h2>
+          Frequently asked
+          <br />
+          questions
+        </h2>
+        <div className="faq-list">
+          {faqs.map((faq, index) => (
+            <button
+              className="faq-row"
+              key={faq}
+              onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+              aria-expanded={activeFaq === index}
             >
-              <Pixels />
-              <p className="text-4xl font-semibold tracking-[-0.06em]">
-                {s.value}
-              </p>
-              <p className="max-w-[180px] text-xs leading-5 text-muted-foreground">
-                {s.label}
-              </p>
-            </div>
+              <span>{faq}</span>
+              <ChevronDown
+                className={activeFaq === index ? "rotated" : ""}
+                aria-hidden="true"
+              />
+              {activeFaq === index && (
+                <small>
+                  We&apos;re building Sonora for thoughtful teams who want to
+                  spend less time managing audio and more time making work that
+                  matters.
+                </small>
+              )}
+            </button>
           ))}
         </div>
       </section>
+      <Footer />
+    </main>
+  );
+}
 
-      {/* ══════════════════════════════════════════
-          PRICING
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border" id="pricing">
-        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
-          <div className="mb-2 flex items-center gap-3">
-            <Pixels />
-            <Tag>Pricing</Tag>
+function AudioStudio({
+  isPlaying,
+  setIsPlaying,
+}: {
+  isPlaying: boolean;
+  setIsPlaying: (value: boolean) => void;
+}) {
+  return (
+    <div className="studio-card">
+      <div className="studio-top">
+        <span>
+          <span className="live-dot" /> live capture
+        </span>
+        <span>00:42:18</span>
+      </div>
+      <div className="studio-screen">
+        <div className="studio-heading">
+          <div className="avatar">JD</div>
+          <div>
+            <strong>Product sync — Tuesday</strong>
+            <span>Just now · 6 participants</span>
           </div>
-          <h2 className="mb-2 mt-5 text-3xl font-semibold sm:text-4xl">
-            Start small. Grow with your knowledge.
-          </h2>
-          <p className="mb-10 text-sm text-muted-foreground">
-            Monthly billing. Cancel any time from the dashboard. All prices
-            include GST.
+          <button aria-label="More options">•••</button>
+        </div>
+        <div className="waveform" aria-label="Audio waveform">
+          {Array.from({ length: 48 }, (_, i) => (
+            <i key={i} style={{ height: `${18 + ((i * 17) % 50)}%` }} />
+          ))}
+        </div>
+        <div className="studio-transcript">
+          <span className="speaker-label">
+            <span className="speaker-dot" /> Jordan · 10:42
+          </span>
+          <p>
+            “The thing we keep hearing is that people don&apos;t need more
+            dashboards. They need a second brain that can hear the whole story.”
           </p>
-
-          <div className="grid gap-4 lg:grid-cols-4">
-            {PLAN_ORDER.map((id) => {
-              const plan = PLANS[id];
-              const featured = id === "growth";
-              return (
-                <div
-                  key={id}
-                  className={`flex flex-col rounded-2xl border p-6 transition-[border-color] hover:border-[#4f46e5]/40 ${
-                    featured
-                      ? "border-[#4f46e5] shadow-[0_0_0_4px_#eef2ff]"
-                      : "border-border"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">{plan.name}</h3>
-                    {featured && (
-                      <span className="rounded-full bg-[#4f46e5] px-2 py-0.5 text-[10px] font-bold text-white">
-                        Popular
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-4 text-3xl font-semibold tracking-[-0.04em]">
-                    {money(plan.inr)}
-                    {plan.inr > 0 && (
-                      <span className="text-sm font-normal text-muted-foreground">
-                        {" "}
-                        /mo
-                      </span>
-                    )}
-                  </p>
-                  <ul className="mt-5 flex-1 space-y-2.5">
-                    {plan.perks.map((perk) => (
-                      <li key={perk} className="flex items-start gap-2 text-xs">
-                        <Check className="mt-0.5 size-3 shrink-0 text-[#4f46e5]" />
-                        <span className="text-muted-foreground">{perk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={id === "free" ? "/signup" : `/signup?plan=${id}`}
-                    className={`press mt-6 block rounded-xl px-4 py-2.5 text-center text-xs font-semibold transition-colors ${
-                      featured
-                        ? "bg-[#4f46e5] text-white hover:bg-[#4338ca]"
-                        : "border border-border hover:border-[#4f46e5]/60 hover:text-[#4f46e5]"
-                    }`}
-                  >
-                    {id === "free" ? "Start free" : `Choose ${plan.name}`}
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
         </div>
-      </section>
-
-      {/* ══════════════════════════════════════════
-          BOTTOM CTA — dark band like Proofmode's footer CTA
-          ══════════════════════════════════════════ */}
-      <section className="border-b border-border bg-[#0f0f0e] text-white">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="flex flex-col items-start justify-between gap-8 py-16 sm:flex-row sm:items-center">
-            <div>
-              <Pixels className="mb-5" />
-              <h2 className="max-w-[500px] text-4xl font-semibold leading-tight sm:text-5xl">
-                Let your knowledge do the talking.
-              </h2>
-            </div>
-            <Link
-              href="/signup"
-              className="press shrink-0 inline-flex items-center gap-2 rounded-xl bg-[#4f46e5] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#4338ca]"
-            >
-              Build your chatbot <ArrowRight className="size-4" />
-            </Link>
-          </div>
+        <div className="studio-prompt">
+          <Sparkles aria-hidden="true" />
+          <span>Ask Sonora anything about this call...</span>
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            aria-label={isPlaying ? "Pause recording" : "Play recording"}
+          >
+            {isPlaying ? (
+              <Pause aria-hidden="true" />
+            ) : (
+              <CirclePlay aria-hidden="true" />
+            )}
+          </button>
         </div>
-      </section>
+      </div>
+      <div className="studio-bottom">
+        <span>
+          <Mic aria-hidden="true" /> Recording in progress
+        </span>
+        <span>
+          <Volume2 aria-hidden="true" /> Voice clarity: high
+        </span>
+      </div>
     </div>
+  );
+}
+
+function AudioVisualizer() {
+  return (
+    <div className="visualizer-card">
+      <div className="visualizer-glow" />
+      <div className="visualizer-top">
+        <span>
+          <Headphones aria-hidden="true" /> sonora / focus mode
+        </span>
+        <span>AI ACTIVE</span>
+      </div>
+      <div className="orb">
+        <div className="orb-core" />
+        <div className="orb-ring ring-one" />
+        <div className="orb-ring ring-two" />
+        <div className="orb-ring ring-three" />
+      </div>
+      <div className="visualizer-caption">
+        <strong>Listening for the signal</strong>
+        <span>Understanding context across 4 conversations</span>
+      </div>
+      <div className="visualizer-bars">
+        {Array.from({ length: 32 }, (_, i) => (
+          <i key={i} style={{ height: `${20 + ((i * 29) % 70)}%` }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WorkflowShowcase() {
+  return (
+    <section className="workflow-section section-rule" id="demo">
+      <div className="workflow-copy">
+        <p className="eyebrow">Made for momentum</p>
+        <h2>
+          Works where
+          <br />
+          your team already does.
+        </h2>
+        <p>
+          Bring the whole conversation into one place. Sonora turns a raw
+          recording into a brief, a decision log, and next steps your team can
+          act on.
+        </p>
+        <div className="workflow-points">
+          <span>
+            <Check aria-hidden="true" /> Capture from any source
+          </span>
+          <span>
+            <Check aria-hidden="true" /> Search every spoken idea
+          </span>
+          <span>
+            <Check aria-hidden="true" /> Create work from context
+          </span>
+        </div>
+      </div>
+      <div className="workflow-ui">
+        <div className="workflow-sidebar">
+          <span className="sidebar-label">Your library</span>
+          <strong>All conversations</strong>
+          <span>
+            Customer calls <b>24</b>
+          </span>
+          <span>
+            Team meetings <b>18</b>
+          </span>
+          <span>
+            Voice notes <b>42</b>
+          </span>
+          <span>
+            Saved insights <b>09</b>
+          </span>
+          <div className="sidebar-bottom">
+            <span className="mini-avatar">MC</span>
+            <small>Maya&apos;s workspace</small>
+          </div>
+        </div>
+        <div className="workflow-main">
+          <div className="workflow-toolbar">
+            <span>Customer research / May 14</span>
+            <span className="status-pill">
+              <span /> analyzed
+            </span>
+          </div>
+          <div className="workflow-title">
+            <span className="audio-icon">
+              <AudioLines aria-hidden="true" />
+            </span>
+            <div>
+              <strong>Onboarding feedback — Acme</strong>
+              <small>42:18 · 6 speakers · recorded today</small>
+            </div>
+            <button aria-label="More options">•••</button>
+          </div>
+          <div className="workflow-wave">
+            {Array.from({ length: 36 }, (_, i) => (
+              <i key={i} style={{ height: `${22 + ((i * 23) % 62)}%` }} />
+            ))}
+          </div>
+          <div className="workflow-columns">
+            <div>
+              <span className="column-label">AI summary</span>
+              <p>
+                Customers want fewer dashboards and a clearer path from insight
+                to action.
+              </p>
+              <div className="tag-row">
+                <span>product signal</span>
+                <span>high confidence</span>
+              </div>
+            </div>
+            <div>
+              <span className="column-label">Next steps</span>
+              <p>
+                <b>03</b> tasks found from this conversation
+              </p>
+              <div className="task-line">
+                <Check aria-hidden="true" /> Share onboarding brief
+              </div>
+              <div className="task-line">
+                <Check aria-hidden="true" /> Review activation drop-off
+              </div>
+            </div>
+          </div>
+          <div className="workflow-prompt">
+            <Sparkles aria-hidden="true" />
+            <span>Ask anything about this conversation...</span>
+            <ArrowUpRight aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Testimonials() {
+  const quotes = [
+    {
+      quote:
+        "Sonora gave our team back the part of meetings we actually wanted: the decisions.",
+      name: "Maya Chen",
+      role: "Head of Product, Northstar",
+    },
+    {
+      quote:
+        "It feels less like transcription and more like having a brilliant producer in the room.",
+      name: "Theo Martin",
+      role: "Founder, Field Notes",
+    },
+    {
+      quote:
+        "The fastest way we have found to turn a messy conversation into a clear next step.",
+      name: "Ari Williams",
+      role: "Creative Director, ARC",
+    },
+  ];
+  return (
+    <section className="testimonials section-rule">
+      <div className="testimonials-heading">
+        <p className="eyebrow">The people who use it</p>
+        <h2>
+          Good words from
+          <br />
+          <em>busy minds.</em>
+        </h2>
+      </div>
+      <div className="testimonial-grid">
+        {quotes.map(({ quote, name, role }) => (
+          <article className="testimonial-card" key={name}>
+            <Quote aria-hidden="true" />
+            <p>“{quote}”</p>
+            <div>
+              <strong>{name}</strong>
+              <span>{role}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer>
+      <div className="footer-top">
+        <a className="wordmark" href="#top">
+          <span className="wordmark-dot" />
+          Sonora<span className="wordmark-ai">.ai</span>
+        </a>
+        <p>Your ideas, in focus.</p>
+        <a className="button button-light" href="#demo">
+          Join the waitlist <ArrowUpRight aria-hidden="true" />
+        </a>
+      </div>
+      <div className="footer-bottom">
+        <span>© 2026 Sonora AI, Inc.</span>
+        <div>
+          <a href="#product">Product</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#company">Company</a>
+        </div>
+        <span>Built for better listening.</span>
+      </div>
+    </footer>
   );
 }

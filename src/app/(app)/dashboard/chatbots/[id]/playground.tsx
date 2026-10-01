@@ -1,10 +1,45 @@
 "use client";
 
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import { ChatWindow, type ChatMessage } from "@/components/chat/chat-window";
 import { useTRPC } from "@/trpc/client";
 
-/** Same retrieval as production, but it never touches the message quota. */
+const STORAGE_KEY = (id: string) => `chatline:playground:${id}`;
+const MAX_STORED = 40;
+
+function loadSession(chatbotId: string): ChatMessage[] {
+  try {
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem(STORAGE_KEY(chatbotId))
+        : null;
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveSession(chatbotId: string, messages: ChatMessage[]) {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY(chatbotId),
+      JSON.stringify(messages.slice(-MAX_STORED)),
+    );
+  } catch {
+    /* localStorage full — silently ignore */
+  }
+}
+
+function clearSession(chatbotId: string) {
+  try {
+    localStorage.removeItem(STORAGE_KEY(chatbotId));
+  } catch {}
+}
+
 export function Playground({
   chatbotId,
   greeting,
@@ -17,6 +52,30 @@ export function Playground({
   const trpc = useTRPC();
   const preview = useMutation(trpc.chatbot.preview.mutationOptions());
 
+  // Lazy initialiser — runs once, no extra render, no useEffect needed.
+  // Pass a `key` to ChatWindow to force a full remount on clear.
+  const [sessionKey, setSessionKey] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const [initialMessages, setInitialMessages] = useState<ChatMessage[]>(() =>
+    loadSession(chatbotId),
+  );
+
+  function handleMessagesChange(messages: ChatMessage[]) {
+    saveSession(chatbotId, messages);
+  }
+
+  function handleReset() {
+    clearSession(chatbotId);
+    preview.reset();
+  }
+
+  function handleClear() {
+    clearSession(chatbotId);
+    preview.reset();
+    setInitialMessages([]);
+    setSessionKey((k) => k + 1);
+  }
+
   async function send(messages: ChatMessage[]): Promise<ChatMessage> {
     const res = await preview.mutateAsync({
       chatbotId,
@@ -27,25 +86,53 @@ export function Playground({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-      <div className="panel h-[560px] overflow-hidden">
+      <div className="panel h-[580px] overflow-hidden">
         <ChatWindow
+          key={sessionKey}
           className="h-full"
           greeting={greeting}
           accent={accent}
           send={send}
-          onReset={() => preview.reset()}
+          initialMessages={initialMessages}
+          onMessagesChange={handleMessagesChange}
+          onReset={handleReset}
         />
       </div>
-      <aside className="panel-pad h-fit space-y-3 text-sm">
-        <h2 className="font-medium">Testing here is free</h2>
-        <p className="text-muted-foreground leading-relaxed">
-          Playground replies use the same sources and settings as the live
-          widget, and are not counted against your monthly messages.
-        </p>
-        <p className="text-muted-foreground leading-relaxed">
-          If an answer is wrong, the fix is almost always a missing source or a
-          vague system prompt — both are on the Settings tab.
-        </p>
+
+      <aside className="panel-pad h-fit space-y-4 text-sm">
+        <div className="space-y-1.5">
+          <h2 className="font-semibold">Playground</h2>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            Free to test — never counts against your monthly messages.
+          </p>
+        </div>
+
+        <div className="space-y-1.5 border-t border-border pt-4">
+          <p className="text-xs font-medium">Session saved</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            Your conversation is kept in this browser. Refresh and it will still
+            be here.
+          </p>
+        </div>
+
+        <div className="space-y-1.5 border-t border-border pt-4">
+          <p className="text-xs font-medium">Not getting good answers?</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            The fix is almost always a missing source or a vague system prompt —
+            both live on the Settings tab.
+          </p>
+        </div>
+
+        <div className="border-t border-border pt-4">
+          <button
+            type="button"
+            onClick={handleClear}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-destructive"
+          >
+            <Trash2 className="size-3" />
+            Clear saved session
+          </button>
+        </div>
       </aside>
     </div>
   );

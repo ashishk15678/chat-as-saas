@@ -111,8 +111,10 @@ model Chatbot {
   id             String   @id @default(cuid())
   ownerId        String
   name           String
+  botType        String   @default("support") // support | sales | onboarding | faq
   status         String   @default("DRAFT") // DRAFT | LIVE | PAUSED
   systemPrompt   String   @default("You are a helpful assistant.") @db.Text
+  fallbackMessage String  @default("I don't have information on that yet. Please contact the team directly and they'll be happy to help.") @db.Text
   model          String   @default("openai/gpt-oss-120b")
   temperature    Float    @default(0.3)
   greeting       String   @default("Hi! How can I help you today?")

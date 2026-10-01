@@ -5,7 +5,6 @@ import { embedder } from "./embedder";
 import { RAG } from "@/lib/constants";
 
 export type Citation = { sourceId: string; title: string };
-
 type Retrieved = {
   content: string;
   sourceId: string;
@@ -20,11 +19,7 @@ export async function retrieve(
   const { embedding } = await embed({
     model: embedder,
     value: query,
-    providerOptions: {
-      google: {
-        outputDimensionality: 768,
-      },
-    },
+    providerOptions: { google: { outputDimensionality: 768 } },
   });
   const vec = JSON.stringify(embedding);
   const rows = await db.$queryRaw<Retrieved[]>`
@@ -52,7 +47,13 @@ export function buildContext(rows: Retrieved[]) {
 }
 
 export async function answer(
-  bot: { id: string; systemPrompt: string; model: string; temperature: number },
+  bot: {
+    id: string;
+    systemPrompt: string;
+    fallbackMessage: string;
+    model: string;
+    temperature: number;
+  },
   history: { role: "user" | "assistant"; content: string }[],
 ) {
   const question = history.at(-1)?.content ?? "";
@@ -65,7 +66,9 @@ export async function answer(
     maxOutputTokens: 700,
     system: `${bot.systemPrompt}
 
-Use only the context below. If it does not contain the answer, say you don't have that information and suggest contacting the team. Keep answers under six sentences. Never mention that you were given context.
+Use only the context below to answer. If the context does not contain the answer, respond with this exact fallback message — do not modify it: "${bot.fallbackMessage}"
+
+Never say you were given context. Keep answers under six sentences.
 
 Context:
 ${context || "(no matching documents)"}`,

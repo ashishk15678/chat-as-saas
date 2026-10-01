@@ -48,6 +48,7 @@ export async function POST(req: Request) {
       ownerId: true,
       status: true,
       systemPrompt: true,
+      fallbackMessage: true,
       model: true,
       temperature: true,
       allowedDomains: true,

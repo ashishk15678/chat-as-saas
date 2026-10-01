@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { APP } from "@/lib/constants";
+import { ThemeToggle } from "@/components/theme";
 
 function PixelLogo() {
   return (
@@ -48,7 +49,10 @@ export function SiteNav() {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1">
+          {/* Dark / light toggle visible on marketing pages */}
+          <ThemeToggle />
+
           <Link
             href="/login"
             className="hidden rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
@@ -57,7 +61,7 @@ export function SiteNav() {
           </Link>
           <Link
             href="/signup"
-            className="press rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-colors hover:bg-accent hover:text-foreground"
+            className="press ml-1 rounded-lg bg-foreground px-3.5 py-2 text-xs font-semibold text-background transition-colors hover:bg-accent hover:text-accent-foreground"
           >
             Start free
           </Link>

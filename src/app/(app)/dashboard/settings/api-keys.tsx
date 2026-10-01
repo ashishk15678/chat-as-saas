@@ -35,6 +35,13 @@ export function ApiKeys() {
     trpc.key.revoke.mutationOptions({ onSuccess: invalidate }),
   );
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (trimmed.length < 2 || create.isPending) return;
+    create.mutate({ name: trimmed });
+  }
+
   return (
     <div className="panel-pad space-y-4">
       <div>
@@ -45,21 +52,24 @@ export function ApiKeys() {
         </p>
       </div>
 
-      <div className="flex gap-2">
+      {/* form so Enter key in the input submits */}
+      <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Production server"
           className="max-w-xs"
+          required
+          minLength={2}
         />
         <Button
+          type="submit"
           className="press"
           disabled={name.trim().length < 2 || create.isPending}
-          onClick={() => create.mutate({ name: name.trim() })}
         >
-          Create key
+          {create.isPending ? "Creating…" : "Create key"}
         </Button>
-      </div>
+      </form>
 
       {fresh && (
         <div className="border-primary/40 bg-primary-muted/40 space-y-2 rounded-xl border p-4">
@@ -68,6 +78,7 @@ export function ApiKeys() {
           </p>
           <CopyField value={fresh} />
           <button
+            type="button"
             onClick={() => setFresh(null)}
             className="text-muted-foreground hover:text-foreground text-xs"
           >

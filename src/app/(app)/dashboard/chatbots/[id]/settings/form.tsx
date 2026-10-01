@@ -17,12 +17,64 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTRPC } from "@/trpc/client";
+import { BOT_TYPES, type BotType } from "@/lib/validators";
+
+/* ── Bot-type presets ─────────────────────────────────────────────────────
+   Each preset seeds systemPrompt + greeting. Users can still edit freely
+   after applying. Shown as selectable cards in the form.
+   ──────────────────────────────────────────────────────────────────────── */
+const BOT_TYPE_META: Record<
+  BotType,
+  {
+    label: string;
+    description: string;
+    icon: string;
+    systemPrompt: string;
+    greeting: string;
+  }
+> = {
+  support: {
+    label: "Customer support",
+    description: "Answers product and service questions from customers.",
+    icon: "🎧",
+    systemPrompt:
+      "You are a friendly and knowledgeable customer support assistant. Your job is to answer customers' questions accurately and helpfully using only the provided documentation. Always be polite and empathetic. If you cannot find the answer, direct the customer to the support team.",
+    greeting: "Hi! How can I help you today?",
+  },
+  sales: {
+    label: "Sales assistant",
+    description: "Qualifies leads and answers pre-purchase questions.",
+    icon: "💼",
+    systemPrompt:
+      "You are an enthusiastic sales assistant. Your goal is to help prospective customers understand our product's value, answer their pre-purchase questions, and guide them toward making a confident buying decision. Focus on benefits and use cases. Be honest about limitations.",
+    greeting: "Hi there! Looking to learn more? I'm here to help.",
+  },
+  onboarding: {
+    label: "Onboarding guide",
+    description: "Walks new users through setup and key features.",
+    icon: "🚀",
+    systemPrompt:
+      "You are a helpful onboarding guide. Your job is to help new users get started quickly by walking them through setup steps, explaining key features, and answering common getting-started questions. Keep instructions clear and concise.",
+    greeting:
+      "Welcome! I'll help you get set up. Where would you like to start?",
+  },
+  faq: {
+    label: "FAQ bot",
+    description: "Answers frequently asked questions directly.",
+    icon: "❓",
+    systemPrompt:
+      "You are a concise FAQ assistant. Answer questions directly and briefly using only the provided knowledge base. If the question isn't covered, say so clearly and suggest where the user can find more help.",
+    greeting: "Ask me anything — I'll do my best to answer.",
+  },
+};
 
 type Bot = {
   id: string;
   name: string;
+  botType: string;
   status: string;
   systemPrompt: string;
+  fallbackMessage: string;
   model: string;
   temperature: number;
   greeting: string;
@@ -34,7 +86,6 @@ type Bot = {
   rateLimitRpm: number;
 };
 
-/** One form, one mutation. Every field writes into the same `patch` object. */
 export function SettingsForm({ bot }: { bot: Bot }) {
   const trpc = useTRPC();
   const router = useRouter();
@@ -60,12 +111,23 @@ export function SettingsForm({ bot }: { bot: Bot }) {
     }),
   );
 
+  function applyPreset(type: BotType) {
+    const p = BOT_TYPE_META[type];
+    setDraft((d) => ({
+      ...d,
+      botType: type,
+      systemPrompt: p.systemPrompt,
+      greeting: p.greeting,
+    }));
+  }
+
   function save() {
     const { id, ...rest } = draft;
     update.mutate({
       chatbotId: bot.id,
       patch: {
         ...rest,
+        botType: rest.botType as BotType,
         status: rest.status as "DRAFT" | "LIVE" | "PAUSED",
         model: rest.model as "llama-3.3-70b-versatile",
         themeMode: rest.themeMode as "system",
@@ -75,7 +137,43 @@ export function SettingsForm({ bot }: { bot: Bot }) {
   }
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-8">
+      {/* ── Bot type ── */}
+      <div className="space-y-3">
+        <Label>Bot type</Label>
+        <p className="text-muted-foreground text-xs">
+          Choosing a type applies a starter system prompt and greeting. You can
+          still edit them below.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {BOT_TYPES.map((type) => {
+            const meta = BOT_TYPE_META[type];
+            const active = draft.botType === type;
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => applyPreset(type)}
+                className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+                  active
+                    ? "border-accent bg-accent/5 ring-1 ring-accent/30"
+                    : "border-border hover:border-accent/40 hover:bg-surface"
+                }`}
+              >
+                <span className="text-xl leading-none">{meta.icon}</span>
+                <div>
+                  <p className="text-sm font-semibold">{meta.label}</p>
+                  <p className="text-muted-foreground mt-0.5 text-xs leading-4">
+                    {meta.description}
+                  </p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Basic info ── */}
       <Field label="Name">
         <Input
           value={draft.name}
@@ -85,7 +183,7 @@ export function SettingsForm({ bot }: { bot: Bot }) {
 
       <Field
         label="Status"
-        hint="Paused chatbots keep their sources but stop answering on your site."
+        hint="Paused chatbots keep their sources but stop answering."
       >
         <Select
           value={draft.status}
@@ -103,13 +201,25 @@ export function SettingsForm({ bot }: { bot: Bot }) {
       </Field>
 
       <Field
-        label="Instructions"
-        hint="Tell it who it works for and how to behave when it does not know something."
+        label="System instructions"
+        hint="Tell it who it works for and how to behave."
       >
         <Textarea
           rows={6}
           value={draft.systemPrompt}
           onChange={(e) => set("systemPrompt", e.target.value)}
+        />
+      </Field>
+
+      <Field
+        label="Fallback message"
+        hint="Shown verbatim when the bot has no matching information. Make it actionable — give visitors somewhere to go."
+      >
+        <Textarea
+          rows={3}
+          value={draft.fallbackMessage}
+          onChange={(e) => set("fallbackMessage", e.target.value)}
+          placeholder="I don't have information on that yet. Please contact support@example.com and we'll get back to you shortly."
         />
       </Field>
 
@@ -120,6 +230,7 @@ export function SettingsForm({ bot }: { bot: Bot }) {
         />
       </Field>
 
+      {/* ── Model + appearance ── */}
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Model">
           <Select
@@ -141,13 +252,14 @@ export function SettingsForm({ bot }: { bot: Bot }) {
             </SelectContent>
           </Select>
         </Field>
+
         <Field label="Accent colour">
           <div className="flex gap-2">
             <input
               type="color"
               value={draft.accent}
               onChange={(e) => set("accent", e.target.value)}
-              className="border-input h-9 w-12 cursor-pointer rounded-md border bg-transparent"
+              className="border-input h-9 w-12 cursor-pointer rounded-lg border bg-transparent"
               aria-label="Accent colour"
             />
             <Input
@@ -157,6 +269,7 @@ export function SettingsForm({ bot }: { bot: Bot }) {
             />
           </div>
         </Field>
+
         <Field label="Widget theme">
           <Select
             value={draft.themeMode}
@@ -172,6 +285,7 @@ export function SettingsForm({ bot }: { bot: Bot }) {
             </SelectContent>
           </Select>
         </Field>
+
         <Field label="Bubble position">
           <Select
             value={draft.position}
@@ -189,8 +303,8 @@ export function SettingsForm({ bot }: { bot: Bot }) {
       </div>
 
       <Field
-        label="Domains allowed to load this chatbot"
-        hint="One per line. Requests from anywhere else are refused. Leave empty only while developing."
+        label="Allowed domains"
+        hint="One per line. Requests from anywhere else are refused. Leave empty while developing."
       >
         <Textarea
           rows={3}
@@ -209,8 +323,8 @@ export function SettingsForm({ bot }: { bot: Bot }) {
       </Field>
 
       <Field
-        label="Messages a minute per visitor"
-        hint="Protects your quota from a script hammering the widget."
+        label="Rate limit (messages / minute per visitor)"
+        hint="Protects your quota from scripts hammering the widget."
       >
         <Input
           type="number"
@@ -221,11 +335,9 @@ export function SettingsForm({ bot }: { bot: Bot }) {
         />
       </Field>
 
-      <div className="panel-pad flex items-center justify-between">
+      <div className="panel-pad flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-medium">
-            Ask for an email before chatting
-          </p>
+          <p className="text-sm font-semibold">Ask for email before chatting</p>
           <p className="text-muted-foreground text-sm">
             Useful when you want to follow up on unanswered questions.
           </p>
@@ -249,9 +361,10 @@ export function SettingsForm({ bot }: { bot: Bot }) {
         </Button>
       </div>
 
-      <div className="border-destructive/30 mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border p-5">
+      {/* ── Danger zone ── */}
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-destructive/30 p-5">
         <div>
-          <p className="text-sm font-medium">Delete this chatbot</p>
+          <p className="text-sm font-semibold">Delete this chatbot</p>
           <p className="text-muted-foreground text-sm">
             Sources, conversations and the embed stop working immediately.
           </p>
@@ -259,7 +372,7 @@ export function SettingsForm({ bot }: { bot: Bot }) {
         <Button
           variant="destructive"
           onClick={() =>
-            confirm(`Delete ${bot.name}? This cannot be undone.`) &&
+            confirm(`Delete "${bot.name}"? This cannot be undone.`) &&
             remove.mutate({ chatbotId: bot.id })
           }
         >

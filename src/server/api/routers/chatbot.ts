@@ -19,6 +19,7 @@ export const chatbotRouter = router({
         name: true,
         status: true,
         accent: true,
+        botType: true,
         updatedAt: true,
         _count: { select: { sources: true, conversations: true } },
       },
@@ -71,19 +72,21 @@ export const chatbotRouter = router({
       });
     }),
 
-  update: botProcedure.input(chatbotUpdate).mutation(({ ctx, input }) =>
-    ctx.db.chatbot.update({
-      where: { id: ctx.chatbot.id },
-      data: input.patch,
-    }),
-  ),
+  update: botProcedure
+    .input(chatbotUpdate)
+    .mutation(({ ctx, input }) =>
+      ctx.db.chatbot.update({
+        where: { id: ctx.chatbot.id },
+        data: input.patch,
+      }),
+    ),
 
   remove: botProcedure.mutation(async ({ ctx }) => {
     await ctx.db.chatbot.delete({ where: { id: ctx.chatbot.id } });
     return { id: ctx.chatbot.id };
   }),
 
-  /** Playground answer. Same retrieval path as the public widget, no quota cost. */
+  /** Playground — same retrieval, no quota cost. */
   preview: botProcedure
     .input(
       z.object({

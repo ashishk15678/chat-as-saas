@@ -70,52 +70,45 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
           <FileDropzone chatbotId={chatbotId} />
         </TabsContent>
 
-        <TabsContent value="url" className="panel-pad mt-4 space-y-3">
-          <Label htmlFor="src-url">Page address</Label>
-          <Input
-            id="src-url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://help.example.com/returns"
-          />
-          <Button
-            className="press"
-            disabled={!url.startsWith("http") || create.isPending}
-            onClick={() =>
+        {/* URL tab — form so Enter submits */}
+        <TabsContent value="url" className="panel-pad mt-4">
+          <form
+            className="space-y-3"
+            onSubmit={(e) => {
+              e.preventDefault();
               create.mutate(
                 { type: "URL", chatbotId, url },
                 { onSuccess: () => setUrl("") },
-              )
-            }
+              );
+            }}
           >
-            {create.isPending ? "Processing…" : "Add page"}
-          </Button>
+            <div className="space-y-1.5">
+              <Label htmlFor="src-url">Page address</Label>
+              <Input
+                id="src-url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://help.example.com/returns"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="press"
+              disabled={!url.startsWith("http") || create.isPending}
+            >
+              {create.isPending ? "Processing…" : "Add page"}
+            </Button>
+          </form>
         </TabsContent>
 
-        <TabsContent value="text" className="panel-pad mt-4 space-y-3">
-          <div className="space-y-2">
-            <Label htmlFor="src-title">Title</Label>
-            <Input
-              id="src-title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Shipping policy"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="src-body">Content</Label>
-            <Textarea
-              id="src-body"
-              rows={7}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Paste the text you want the chatbot to know."
-            />
-          </div>
-          <Button
-            className="press"
-            disabled={!title || !body || create.isPending}
-            onClick={() =>
+        {/* Text tab — Enter in title moves to body; submit button or Enter in last field */}
+        <TabsContent value="text" className="panel-pad mt-4">
+          <form
+            className="space-y-3"
+            onSubmit={(e) => {
+              e.preventDefault();
               create.mutate(
                 { type: "TEXT", chatbotId, title, body },
                 {
@@ -124,37 +117,46 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
                     setBody("");
                   },
                 },
-              )
-            }
+              );
+            }}
           >
-            {create.isPending ? "Processing…" : "Add text"}
-          </Button>
+            <div className="space-y-1.5">
+              <Label htmlFor="src-title">Title</Label>
+              <Input
+                id="src-title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Shipping policy"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="src-body">Content</Label>
+              <Textarea
+                id="src-body"
+                rows={7}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder="Paste the text you want the chatbot to know."
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="press"
+              disabled={!title || !body || create.isPending}
+            >
+              {create.isPending ? "Processing…" : "Add text"}
+            </Button>
+          </form>
         </TabsContent>
 
-        <TabsContent value="faq" className="panel-pad mt-4 space-y-3">
-          <div className="space-y-2">
-            <Label htmlFor="src-q">Question</Label>
-            <Input
-              id="src-q"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="How long does delivery take?"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="src-a">Answer</Label>
-            <Textarea
-              id="src-a"
-              rows={5}
-              value={answerText}
-              onChange={(e) => setAnswerText(e.target.value)}
-              placeholder="Write it exactly as you want it said."
-            />
-          </div>
-          <Button
-            className="press"
-            disabled={!question || !answerText || create.isPending}
-            onClick={() =>
+        {/* FAQ tab */}
+        <TabsContent value="faq" className="panel-pad mt-4">
+          <form
+            className="space-y-3"
+            onSubmit={(e) => {
+              e.preventDefault();
               create.mutate(
                 { type: "FAQ", chatbotId, question, answer: answerText },
                 {
@@ -163,11 +165,38 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
                     setAnswerText("");
                   },
                 },
-              )
-            }
+              );
+            }}
           >
-            {create.isPending ? "Processing…" : "Add question"}
-          </Button>
+            <div className="space-y-1.5">
+              <Label htmlFor="src-q">Question</Label>
+              <Input
+                id="src-q"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="How long does delivery take?"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="src-a">Answer</Label>
+              <Textarea
+                id="src-a"
+                rows={5}
+                value={answerText}
+                onChange={(e) => setAnswerText(e.target.value)}
+                placeholder="Write it exactly as you want it said."
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              className="press"
+              disabled={!question || !answerText || create.isPending}
+            >
+              {create.isPending ? "Processing…" : "Add question"}
+            </Button>
+          </form>
         </TabsContent>
       </Tabs>
 
@@ -192,9 +221,7 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
                 key={s.id}
                 className="relative flex items-center gap-4 px-5 py-3.5"
               >
-                {/* Animated border traces the row when processing */}
                 {isActive && <ProcessingBorder rounded={0} />}
-
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{s.title}</p>
                   <p className="text-muted-foreground mt-0.5 flex flex-wrap items-center gap-2 text-xs">
@@ -210,18 +237,17 @@ export function SourcesPanel({ chatbotId }: { chatbotId: string }) {
                     <p className="text-destructive mt-1 text-xs">{s.error}</p>
                   )}
                 </div>
-
                 {s.status === "FAILED" && (
                   <Button
                     variant="ghost"
                     size="icon"
                     disabled={retry.isPending}
                     onClick={() => retry.mutate({ chatbotId, sourceId: s.id })}
-                    aria-label="Try processing again"
+                    aria-label="Retry processing"
                   >
                     <RotateCcw
                       className={
-                        retry.isPending ? "animate-spin size-4" : "size-4"
+                        retry.isPending ? "size-4 animate-spin" : "size-4"
                       }
                     />
                   </Button>

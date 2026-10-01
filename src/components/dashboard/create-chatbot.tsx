@@ -39,6 +39,13 @@ export function CreateChatbot({ label = "New chatbot" }: { label?: string }) {
     }),
   );
 
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = name.trim();
+    if (trimmed.length < 2 || create.isPending) return;
+    create.mutate({ name: trimmed });
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
@@ -49,35 +56,46 @@ export function CreateChatbot({ label = "New chatbot" }: { label?: string }) {
         }
       />
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create a chatbot</DialogTitle>
-          <DialogDescription>
-            Name it after the site or product it will answer for. You can change
-            this later.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-2">
-          <Label htmlFor="bot-name">Name</Label>
-          <Input
-            id="bot-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Acme help desk"
-            autoFocus
-          />
-        </div>
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            className="press"
-            disabled={name.trim().length < 2 || create.isPending}
-            onClick={() => create.mutate({ name: name.trim() })}
-          >
-            {create.isPending ? "Creating…" : "Create chatbot"}
-          </Button>
-        </DialogFooter>
+        {/* form wraps both the input and footer buttons so Enter submits */}
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Create a chatbot</DialogTitle>
+            <DialogDescription>
+              Name it after the site or product it will answer for. You can
+              change this later.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="my-4 space-y-2">
+            <Label htmlFor="bot-name">Name</Label>
+            <Input
+              id="bot-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Acme help desk"
+              autoFocus
+              required
+              minLength={2}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              className="press"
+              disabled={name.trim().length < 2 || create.isPending}
+            >
+              {create.isPending ? "Creating…" : "Create chatbot"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

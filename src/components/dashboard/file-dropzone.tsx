@@ -37,9 +37,15 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
         const put = await fetch(url, {
           method: "PUT",
           body: file,
-          headers: { "content-type": file.type },
+          // Do NOT set content-type — it isn't signed into the presigned URL
+          // and some S3 providers reject the mismatch with a 403.
         });
-        if (!put.ok) throw new Error("Upload rejected by storage");
+        if (!put.ok) {
+          const msg = await put.text().catch(() => "");
+          throw new Error(
+            `Storage rejected the upload (${put.status})${msg ? `: ${msg.slice(0, 120)}` : ""}`,
+          );
+        }
         setProgress((p) => ({ ...p, [file.name]: 80 }));
         await create.mutateAsync({
           type: "FILE",
@@ -51,9 +57,11 @@ export function FileDropzone({ chatbotId }: { chatbotId: string }) {
         setProgress((p) => ({ ...p, [file.name]: 100 }));
         toast.success(`${file.name} ready.`);
       } catch (e) {
-        toast.error(
-          e instanceof Error ? e.message : `${file.name} could not be uploaded`,
-        );
+        const msg =
+          e instanceof Error ? e.message : `${file.name} could not be uploaded`;
+        toast.error(msg, {
+          description: "Check your file type and size, then try again.",
+        });
       } finally {
         setTimeout(
           () => setProgress(({ [file.name]: _, ...rest }) => rest),

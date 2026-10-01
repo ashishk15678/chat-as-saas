@@ -1,358 +1,3 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@import "../components/ascii-fire.css";
-@import "../components/grain-interludes.css";
-@import "./workflow-styles.css";
-
-@custom-variant dark (&:is(.dark *));
-
-/* Landing page compat tokens — referenced by ascii-fire.css */
-:root {
-  --accent-yellow: #e8c84a;
-  --accent-lilac: #c4b5fd;
-}
-
-/* ────────────────────────────────────────────────────────────
-   Design tokens — Proofmode-exact aesthetic
-   Pure white · near-black · indigo blue accent
-   ──────────────────────────────────────────────────────────── */
-:root {
-  --radius: 0.5rem;
-
-  /* page */
-  --background: #ffffff;
-  --surface: #f8f8f6;
-  /* barely-off-white for section fills */
-  --foreground: #0f0f0e;
-
-  /* cards */
-  --card: #ffffff;
-  --card-foreground: #0f0f0e;
-
-  /* popover */
-  --popover: #ffffff;
-  --popover-foreground: #0f0f0e;
-
-  /* primary = near-black buttons  */
-  --primary: #0f0f0e;
-  --primary-foreground: #ffffff;
-  --primary-muted: #eef2ff;
-  /* indigo-50 */
-
-  /* accent = indigo blue */
-  --accent: #4f46e5;
-  --accent-foreground: #ffffff;
-
-  /* secondary / muted */
-  --secondary: #f4f4f4;
-  --secondary-foreground: #0f0f0e;
-  --muted: #f4f4f4;
-  --muted-foreground: #737370;
-
-  /* semantic */
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
-  --success: #16a34a;
-  --warning: #d97706;
-
-  /* borders */
-  --border: rgba(15, 15, 14, 0.1);
-  --input: rgba(15, 15, 14, 0.1);
-  --ring: #4f46e5;
-
-  /* sidebar — very slightly off-white so it reads as separate from main */
-  --sidebar: #f8f8f6;
-  --sidebar-foreground: #0f0f0e;
-  --sidebar-primary: #0f0f0e;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eeeeed;
-  --sidebar-accent-foreground: #0f0f0e;
-  --sidebar-border: rgba(15, 15, 14, 0.08);
-
-  /* chart */
-  --chart-1: #4f46e5;
-  --chart-2: #0f0f0e;
-  --chart-3: #737370;
-  --chart-4: #d4d4d0;
-  --chart-5: #f4f4f4;
-
-  /* pixel-deco colour — green for the decorative squares (Proofmode) */
-  --pixel-color: #5de000;
-}
-
-.dark {
-  --background: #0f0f0e;
-  --surface: #171716;
-  --foreground: #f8f8f6;
-
-  --card: #171716;
-  --card-foreground: #f8f8f6;
-
-  --popover: #171716;
-  --popover-foreground: #f8f8f6;
-
-  --primary: #f8f8f6;
-  --primary-foreground: #0f0f0e;
-  --primary-muted: #1e1b4b;
-
-  --accent: #6366f1;
-  --accent-foreground: #ffffff;
-
-  --secondary: #1e1e1c;
-  --secondary-foreground: #f8f8f6;
-  --muted: #1e1e1c;
-  --muted-foreground: #888884;
-
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --success: #22c55e;
-  --warning: #f59e0b;
-
-  --border: rgba(248, 248, 246, 0.1);
-  --input: rgba(248, 248, 246, 0.12);
-  --ring: #6366f1;
-
-  --sidebar: #171716;
-  --sidebar-foreground: #f8f8f6;
-  --sidebar-primary: #f8f8f6;
-  --sidebar-primary-foreground: #0f0f0e;
-  --sidebar-accent: #1e1e1c;
-  --sidebar-accent-foreground: #f8f8f6;
-  --sidebar-border: rgba(248, 248, 246, 0.08);
-
-  --chart-1: #6366f1;
-  --chart-2: #f8f8f6;
-  --chart-3: #888884;
-  --chart-4: #2a2a28;
-  --chart-5: #1e1e1c;
-
-  --pixel-color: #5de000;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary-muted: var(--primary-muted);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 4px);
-  --radius-xl: calc(var(--radius) + 8px);
-  --radius-2xl: calc(var(--radius) + 16px);
-  --radius-3xl: calc(var(--radius) + 28px);
-
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-
-  --shadow-card:
-    0 1px 3px rgba(15, 15, 14, 0.06), 0 4px 12px rgba(15, 15, 14, 0.04);
-  --shadow-lift:
-    0 2px 8px rgba(15, 15, 14, 0.08), 0 16px 40px rgba(15, 15, 14, 0.1);
-  --shadow-blur:
-    0 0 0 1px rgba(15, 15, 14, 0.06), 0 24px 56px rgba(15, 15, 14, 0.1);
-
-  --ease-out-soft: cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv11", "ss01";
-    text-rendering: optimizeLegibility;
-  }
-
-  /* Blue selection to match accent */
-  ::selection {
-    background: #c7d2fe;
-    color: #0f0f0e;
-  }
-
-  :focus-visible {
-    @apply outline-ring outline-2 outline-offset-2;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    /* font-size is capped globally below — only tracking here for app pages */
-    letter-spacing: -0.04em;
-    font-size: clamp(
-      0.875rem,
-      2vw,
-      1.5rem
-    ); /* hard cap: 1.5rem = 24px = text-2xl */
-  }
-}
-
-@layer components {
-  /* ── Panels ── */
-  .panel {
-    background-color: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-  }
-
-  .panel-pad {
-    background-color: var(--color-card);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    padding: 1.25rem;
-  }
-
-  @media (min-width: 640px) {
-    .panel-pad {
-      padding: 1.5rem;
-    }
-  }
-
-  .hairline {
-    border-top: 1px solid var(--color-border);
-  }
-
-  /* ── Press feedback ── */
-  .press {
-    transition:
-      transform 0.14s var(--ease-out-soft),
-      box-shadow 0.14s var(--ease-out-soft);
-  }
-
-  .press:active {
-    transform: scale(0.97);
-  }
-
-  /* ── Pixel decoration (Proofmode green 2×2 grid) ── */
-  .pixel-deco {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3px;
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-  }
-
-  .pixel-deco span {
-    display: block;
-    background: var(--pixel-color);
-    border-radius: 2px;
-  }
-
-  /* ── Eyebrow label ── */
-  .eyebrow {
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--color-muted-foreground);
-  }
-
-  /* ── Glass card (backdrop blur for hero mockup) ── */
-  .glass {
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: var(--radius-2xl);
-    box-shadow: var(--shadow-blur);
-  }
-
-  .dark .glass {
-    background: rgba(23, 23, 22, 0.82);
-    border-color: rgba(255, 255, 255, 0.08);
-  }
-
-  /* ── CTA buttons ── */
-  .btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    background: var(--color-primary);
-    color: var(--color-primary-foreground);
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: var(--radius-lg);
-    transition:
-      background 0.15s ease,
-      transform 0.14s var(--ease-out-soft);
-  }
-
-  .btn-primary:hover {
-    background: var(--color-accent);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.97);
-  }
-
-  .btn-secondary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    background: transparent;
-    color: var(--color-foreground);
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    transition:
-      border-color 0.15s ease,
-      color 0.15s ease;
-  }
-
-  .btn-secondary:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
 * {
   box-sizing: border-box;
   border-color: var(--border);
@@ -362,7 +7,14 @@ html {
   scroll-behavior: smooth;
 }
 
-.site-shell a {
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+a {
   color: inherit;
   text-decoration: none;
 }
@@ -477,50 +129,20 @@ button {
   color: #171717;
 }
 
-/* ── Global font cap: nothing beyond 1.5rem (24px / text-2xl) ─────────────
-   All headings in the app shell (dashboard, auth, settings) are capped.
-   The landing page `.site-shell` uses its own scoped rules below.
-   ─────────────────────────────────────────────────────────────────────── */
-@layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: clamp(1rem, 2vw, 1.5rem); /* max = 24px = text-2xl */
-    letter-spacing: -0.04em;
-  }
+.hero h1,
+.hero h1 em {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
 }
 
-/* Landing page display text — scoped inside .site-shell so it doesn't
-   bleed into any dashboard or app page */
-.site-shell h1 {
-  font-size: clamp(2rem, 5vw, 3rem) !important; /* hero: up to 48px */
-  letter-spacing: -0.075em !important;
-  line-height: 0.93 !important;
-  font-weight: 400 !important;
-}
-.site-shell h2,
-.site-shell .intro h2,
-.site-shell .split-copy h2,
-.site-shell .numbers h2,
-.site-shell .faq h2,
-.site-shell .testimonials-heading h2,
-.site-shell .grain-panel-copy h2,
-.site-shell .grain-quote blockquote {
-  font-size: clamp(1.5rem, 3.5vw, 2.25rem) !important; /* max = 36px */
-  letter-spacing: -0.065em !important;
-  line-height: 0.96 !important;
-  font-weight: 400 !important;
-}
-.site-shell h3 {
-  font-size: 1.0625rem !important; /* 17px */
-  letter-spacing: -0.05em !important;
-  font-weight: 400 !important;
+h2 em {
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
 }
 
-.site-shell .hero-description {
+.hero-description {
   max-width: 310px;
   margin: 30px 0 26px;
   color: #5f5f59;
@@ -528,7 +150,7 @@ button {
   line-height: 1.45;
 }
 
-.site-shell .button {
+.button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -781,7 +403,7 @@ button {
 .video-copy h2,
 .numbers h2,
 .faq h2 {
-  font-size: clamp(36px, 4.5vw, 61px);
+  /* handled by .site-shell h2 in globals.css */
 }
 
 .intro-copy {
@@ -795,15 +417,22 @@ button {
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  /* Flush to the section edges — no horizontal margin asymmetry */
   margin: 0 7vw;
+  /* All four outer borders so every cell is enclosed identically */
+  border-top: 1px solid var(--border);
   border-left: 1px solid var(--border);
 }
 
 .feature-card {
-  min-height: 245px;
+  /* Perfect square — equal vertical and horizontal sizing */
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  /* Right + bottom border close each cell's box */
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 30px 28px;
+  /* Equal padding on all sides for tight visual grid */
+  padding: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1131,27 +760,28 @@ button {
   padding-bottom: 68px;
 }
 
-.site-shell footer {
+footer {
   background: #171717;
   color: #fff;
   min-height: 190px;
   padding: 42px 7vw;
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.site-shell .footer .wordmark-dot,
-.site-shell footer .wordmark-dot {
+.footer .wordmark-dot,
+footer .wordmark-dot {
   background: #fff;
   box-shadow: inset 0 0 0 3px var(--accent-yellow);
 }
 
-.site-shell footer p {
+footer p {
   color: #9d9d97;
   font-size: 12px;
 }
 
-.site-shell .button-light {
+.button-light {
   background: #f7f7f4;
   color: #171717;
 }

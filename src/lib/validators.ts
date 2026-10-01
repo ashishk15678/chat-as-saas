@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-/** Shared by tRPC inputs, REST routes and client forms. One definition, three consumers. */
 export const id = z.string().cuid();
 
 export const hexColor = z
@@ -16,8 +15,12 @@ export const domain = z
     "Enter a hostname such as app.example.com",
   );
 
+export const BOT_TYPES = ["support", "sales", "onboarding", "faq"] as const;
+export type BotType = (typeof BOT_TYPES)[number];
+
 export const chatbotCreate = z.object({
   name: z.string().trim().min(2).max(60),
+  botType: z.enum(BOT_TYPES).default("support"),
 });
 
 export const chatbotUpdate = z.object({
@@ -25,8 +28,10 @@ export const chatbotUpdate = z.object({
   patch: z
     .object({
       name: z.string().trim().min(2).max(60),
+      botType: z.enum(BOT_TYPES),
       status: z.enum(["DRAFT", "LIVE", "PAUSED"]),
       systemPrompt: z.string().trim().max(4_000),
+      fallbackMessage: z.string().trim().min(1).max(500),
       model: z.enum([
         "openai/gpt-oss-120b",
         "llama-3.3-70b-versatile",
