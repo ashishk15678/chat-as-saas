@@ -9,7 +9,7 @@ export default function Page() {
         title="acme"
       ></iframe>*/}
       <script
-        src="http://localhost:3000/widget.js"
+        src={process.env.NEXT_PUBLIC_APP_URL + "/widget.js"}
         data-chatline-id="cmulolsed000204l2f26a9p2s"
         defer
       ></script>
