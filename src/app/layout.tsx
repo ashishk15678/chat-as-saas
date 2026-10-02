@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme";
 import { TRPCReactProvider } from "@/trpc/client";
 import { APP } from "@/lib/constants";
 import "@/styles/globals.css";
+import { Analytics } from "@vercel/analytics/next";
 
 const sans = GeistSans;
 const mono = GeistMono;
@@ -37,6 +38,7 @@ export default function RootLayout({
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <Toaster position="top-center" />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

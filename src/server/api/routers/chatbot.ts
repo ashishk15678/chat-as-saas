@@ -72,14 +72,12 @@ export const chatbotRouter = router({
       });
     }),
 
-  update: botProcedure
-    .input(chatbotUpdate)
-    .mutation(({ ctx, input }) =>
-      ctx.db.chatbot.update({
-        where: { id: ctx.chatbot.id },
-        data: input.patch,
-      }),
-    ),
+  update: botProcedure.input(chatbotUpdate).mutation(({ ctx, input }) =>
+    ctx.db.chatbot.update({
+      where: { id: ctx.chatbot.id },
+      data: input.patch,
+    }),
+  ),
 
   remove: botProcedure.mutation(async ({ ctx }) => {
     await ctx.db.chatbot.delete({ where: { id: ctx.chatbot.id } });

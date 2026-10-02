@@ -11,10 +11,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function EmbedLayout({ children }: { children: React.ReactNode }) {
+export default function EmbedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <body className="m-0 overflow-hidden bg-transparent p-0">
-      {children}
-    </body>
+    <body className="m-0 overflow-hidden bg-transparent p-0">{children}</body>
   );
 }

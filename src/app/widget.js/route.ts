@@ -4,7 +4,7 @@ export function OPTIONS() {
   return new Response(null, {
     status: 204,
     headers: {
-      "Access-Control-Allow-Origin":  "*",
+      "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Cross-Origin-Resource-Policy": "cross-origin",
     },
@@ -158,8 +158,8 @@ export function GET() {
 
   return new Response(script, {
     headers: {
-      "Content-Type":                 "application/javascript; charset=utf-8",
-      "Access-Control-Allow-Origin":  "*",
+      "Content-Type": "application/javascript; charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, OPTIONS",
       "Cross-Origin-Resource-Policy": "cross-origin",
       // Short cache so fixes roll out quickly; CDN can still serve stale
