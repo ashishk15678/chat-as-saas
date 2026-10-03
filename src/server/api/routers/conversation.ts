@@ -64,7 +64,6 @@ export const conversationRouter = router({
           where: {
             conversation: { chatbotId: ctx.chatbot.id },
             role: "assistant",
-            citations: { equals: null },
             createdAt: { gte: since },
           },
           orderBy: { createdAt: "desc" },
