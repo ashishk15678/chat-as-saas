@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AsciiFire } from "@/components/ascii-fire";
 import { GrainInterludes, GrainQuote } from "@/components/grain-interludes";
 import {
@@ -9,162 +9,200 @@ import {
   Check,
   ChevronDown,
   CirclePlay,
-  Command,
-  FileAudio,
   Headphones,
   Mic,
   Pause,
-  Play,
   Quote,
   Sparkles,
   Volume2,
-  WandSparkles,
-  Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import { cn } from "@/lib/utils";
 
-const features = [
-  {
-    icon: AudioLines,
-    title: "Voice intelligence",
-    body: "Turn every conversation into a searchable, usable source of truth.",
-  },
-  {
-    icon: WandSparkles,
-    title: "Instant production",
-    body: "Clean up, summarize, and shape raw audio into something your team can use.",
-  },
-  {
-    icon: Command,
-    title: "One prompt away",
-    body: "Ask anything about your calls, clips, and customer conversations.",
-  },
-  {
-    icon: FileAudio,
-    title: "Audio, organized",
-    body: "Every recording, transcript, and insight in one calm, focused workspace.",
-  },
-  {
-    icon: Sparkles,
-    title: "AI that listens",
-    body: "Find the moments that matter without scrubbing through an hour of audio.",
-  },
-  {
-    icon: Zap,
-    title: "Ship faster",
-    body: "Move from a raw recording to a polished asset in a few seconds.",
-  },
+const navItems = [
+  { href: "#product", label: "Product" },
+  { href: "#solutions", label: "Solutions" },
+  { href: "#pricing", label: "Pricing" },
+  { href: "#company", label: "Company" },
 ];
 
 const faqs = [
-  "What is Sonora?",
-  "How does the audio AI work?",
-  "Can I bring my own recordings?",
-  "Who is Sonora built for?",
+  {
+    q: "What is Sonora?",
+    a: "Sonora turns your recordings into searchable, usable work: summaries, decisions, and next steps.",
+  },
+  {
+    q: "How does the audio AI work?",
+    a: "It listens to the whole conversation, understands context across speakers, and surfaces the moments that matter.",
+  },
+  {
+    q: "Can I bring my own recordings?",
+    a: "Yes. Upload existing audio or capture new calls, meetings, and voice notes directly in Sonora.",
+  },
+  {
+    q: "Who is Sonora built for?",
+    a: "Thoughtful teams who want to spend less time managing audio and more time making work that matters.",
+  },
 ];
 
 export default function Page() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close the mobile menu with Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   return (
     <>
-      <nav
-        className="flex w-full space-x-10 justify-between border-b border-border px-4 py-1 fixed top-0 backdrop-blur-2xl"
-        aria-label="Main navigation"
-      >
-        <a className="wordmark" href="#top" aria-label="Sonora home">
-          <AsciiFire />
-          <span className="wordmark-dot" />
-          Sonora<span className="wordmark-ai">.ai</span>
-        </a>
-        <div className="nav-links">
-          <a href="#product">Product</a>
-          <a href="#solutions">Solutions</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#company">Company</a>
-        </div>
-        <div className="nav-actions">
-          <ThemeToggle />
-          <a href="/login">Log in</a>
-          <a href="#demo">
-            <Button>
-              Start now <ArrowUpRight aria-hidden="true" />
-            </Button>{" "}
-          </a>
-        </div>
-        <button className="mobile-menu" aria-label="Open menu">
-          <span />
-          <span />
-        </button>
-      </nav>
+      <a className="skip-link" href="#top">
+        Skip to content
+      </a>
 
-      <main className=" w-full max-w-7xl mx-auto flex flex-col space-y-8">
-        <section className="flex w-full space-x-10 justify-between  mt-30">
-          <div className="p-8 w-full h-full flex flex-col justify-center my-auto bg-card ">
-            <h1 className="text-4xl">
+      <header>
+        <nav className="site-nav" aria-label="Main navigation">
+          <div className="site-nav-bar">
+            <a className="wordmark" href="#top" aria-label="Sonora home">
+              <span aria-hidden="true" className="contents">
+                <AsciiFire />
+              </span>
+              <span className="wordmark-dot" aria-hidden="true" />
+              Sonora<span className="wordmark-ai">.ai</span>
+            </a>
+
+            <div className="nav-links">
+              {navItems.map((item) => (
+                <a key={item.href} href={item.href}>
+                  {item.label}
+                </a>
+              ))}
+            </div>
+
+            <div className="nav-actions">
+              <ThemeToggle />
+              <a className="nav-login" href="/login">
+                Log in
+              </a>
+              <a href="/dashboard" >
+              <Button>
+
+                Start now <ArrowUpRight aria-hidden="true" />
+              </Button>
+              </a>
+            </div>
+
+            <div className="mobile-bar">
+              <ThemeToggle />
+              <button
+                type="button"
+                className="mobile-menu"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                aria-controls="mobile-menu-panel"
+                onClick={() => setMenuOpen(!menuOpen)}
+              >
+                <span />
+                <span />
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="mobile-menu-panel"
+            className="mobile-panel"
+            data-open={menuOpen}
+          >
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+              </a>
+            ))}
+            <a href="/login" onClick={() => setMenuOpen(false)}>
+              Log in
+            </a>
+            <a
+              href="/dashboard"
+              onClick={() => setMenuOpen(false)}
+            >
+              <Button className={"w-full text-2xl"} size={"lg"}>
+
+              Start now <ArrowUpRight aria-hidden="true" />
+              </Button>
+            </a>
+          </div>
+        </nav>
+      </header>
+
+      <main
+        id="top"
+        className="w-full max-w-7xl mx-auto flex flex-col space-y-8 px-4 sm:px-6 xl:px-0"
+      >
+        <section
+          aria-labelledby="hero-title"
+          className="flex w-full flex-col lg:flex-row gap-8 lg:gap-10 justify-between mt-24 lg:mt-30"
+        >
+          <div className="p-5 sm:p-8 w-full flex flex-col justify-center my-auto bg-card">
+            <h1 id="hero-title" className="text-4xl">
               Make every <em>conversation</em> count.
             </h1>
-            <p className="text-2xl text-muted-foreground my-7">
+            <p className="text-lg sm:text-2xl text-muted-foreground my-7">
               Sonora turns spoken ideas into clear, useful work. Record,
               understand, and create with an AI that actually listens.
             </p>
-            <Button className={"w-full flex flex-row space-x-3 py-2 text-4xl"}>
-              <a href="/dashboard">Start listening</a>{" "}
-              <ArrowUpRight aria-hidden="true" />
-            </Button>
+
+            <a
+              href="/dashboard"
+            >
+            <Button className={"flex justify-center gap-x-2 text-2xl w-full"}>
+              Start listening <ArrowUpRight aria-hidden="true" />
+</Button>
+            </a>
             <p className="hero-note">No credit card required</p>
           </div>
-          {/*<Card className="w-full">*/}
 
           <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
-          {/*</Card>*/}
         </section>
 
-        <div className="logo-strip" aria-label="Trusted by teams at">
-          <span>northstar</span>
-          <span>notion</span>
-          <span>Linear</span>
-          <span>loom</span>
-          <span>ARC</span>
-          <span>superhuman</span>
-        </div>
+        <ul className="logo-strip" aria-label="Trusted by teams at">
+          <li>northstar</li>
+          <li>notion</li>
+          <li>Linear</li>
+          <li>loom</li>
+          <li>ARC</li>
+          <li>superhuman</li>
+        </ul>
 
-        <div className="my-16">
-          <p className="text-4xl">Less listening. More doing.</p>
-          <p className="text-2xl text-muted-foreground my-7">
+        <section id="product" className="my-10 lg:my-16">
+          <h2 className="text-3xl sm:text-4xl">Less listening. More doing.</h2>
+          <p className="text-lg sm:text-2xl text-muted-foreground my-7">
             Between client calls, team syncs, and the ideas that happen in
             between, your best work is already spoken. Sonora captures the
             signal, removes the noise, and gives you back the good part.
           </p>
-          {/* <section
-            className="grid grid-cols-3 border border-border "
-            id="solutions"
-          >
-            {features.map(({ icon: Icon, title, body }, index) => (
-              <article className="feature-card" key={title}>
-                <div className="feature-icon">
-                  <Icon aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="feature-number">0{index + 1}</p>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </div>
-              </article>
-            ))}
-          </section> */}
-        </div>
+        </section>
+
         <GrainInterludes />
-        <section className="flex justify-between w-full space-x-12">
-          <div className="split-copy border border-border p-8 w-full">
+
+        <section
+          id="solutions"
+          className="flex flex-col lg:flex-row justify-between w-full gap-8 lg:gap-12"
+        >
+          <div className="split-copy border border-border p-5 sm:p-8 w-full">
             <p className="eyebrow">People + AI</p>
             <h2>
               Say it once.
               <br />
-              <em>Ship it forever. </em>
+              <em>Ship it forever.</em>
             </h2>
             <p>
               Sonora makes the distance between a thought and a finished thing
@@ -187,12 +225,16 @@ export default function Page() {
           </div>
           <AudioVisualizer />
         </section>
+
         <WorkflowShowcase />
         <GrainQuote />
         <Testimonials />
+
         <section className="w-full section-rule" id="pricing">
           <p className="eyebrow">By the numbers</p>
-          <h2 className="text-4xl">The math behind better conversations.</h2>
+          <h2 className="text-3xl sm:text-4xl">
+            The math behind better conversations.
+          </h2>
           <div className="number-list text-xl">
             <div>
               <span>Average time saved per call</span>
@@ -206,7 +248,9 @@ export default function Page() {
             </div>
             <div>
               <span>Words understood, not just transcribed</span>
-              <strong>∞</strong>
+              <strong>
+                <span aria-label="infinite">∞</span>
+              </strong>
             </div>
             <div>
               <span>Meetings you never need to re-listen to</span>
@@ -214,32 +258,48 @@ export default function Page() {
             </div>
           </div>
         </section>
+
         <section className="my-12 w-full section-rule" id="company">
-          <h2 className="text-4xl">Frequently asked questions .</h2>
-          <div className="text-xl flex flex-col mt-6">
-            {faqs.map((faq, index) => (
-              <button
-                className="text-xl w-full flex justify-between py-4 border-b border-border"
-                key={faq}
-                onClick={() => setActiveFaq(activeFaq === index ? null : index)}
-                aria-expanded={activeFaq === index}
-              >
-                <span>{faq}</span>
-                <ChevronDown
-                  className={activeFaq === index ? "rotated" : ""}
-                  aria-hidden="true"
-                />
-                {/*{activeFaq === index && (
-                  <small>
-                    We&apos;re building Sonora for thoughtful teams who want to
-                    spend less time managing audio and more time making work
-                    that matters.
-                  </small>
-                )}*/}
-              </button>
-            ))}
+          <h2 className="text-3xl sm:text-4xl">Frequently asked questions</h2>
+          <div className="flex flex-col mt-6">
+            {faqs.map(({ q, a }, index) => {
+              const open = activeFaq === index;
+              return (
+                <div key={q} className="border-b border-border">
+                  <h3 className="text-lg sm:text-xl">
+                    <button
+                      type="button"
+                      id={`faq-btn-${index}`}
+                      className="w-full min-h-12 flex items-center justify-between gap-4 py-4 text-left"
+                      onClick={() => setActiveFaq(open ? null : index)}
+                      aria-expanded={open}
+                      aria-controls={`faq-panel-${index}`}
+                    >
+                      <span>{q}</span>
+                      <ChevronDown
+                        className={cn(
+                          "size-5 shrink-0 transition-transform",
+                          open && "rotate-180"
+                        )}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </h3>
+                  <div
+                    id={`faq-panel-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-btn-${index}`}
+                    hidden={!open}
+                    className="pb-5 max-w-prose text-base text-muted-foreground"
+                  >
+                    {a}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
+
         <Footer />
       </main>
     </>
@@ -254,30 +314,34 @@ function AudioStudio({
   setIsPlaying: (value: boolean) => void;
 }) {
   return (
-    <div className="w-full h-full studio-card ">
+    <div className="w-full studio-card">
       <div className="studio-top">
         <span>
-          <span className="live-dot" /> live capture
+          <span className="live-dot" aria-hidden="true" /> live capture
         </span>
         <span>00:42:18</span>
       </div>
       <div className="studio-screen">
         <div className="studio-heading">
-          <div className="avatar">JD</div>
+          <div className="avatar" aria-hidden="true">
+            JD
+          </div>
           <div>
             <strong>Product sync — Tuesday</strong>
             <span>Just now · 6 participants</span>
           </div>
-          <button aria-label="More options">•••</button>
+          <button type="button" aria-label="More options">
+            •••
+          </button>
         </div>
-        <div className="waveform" aria-label="Audio waveform">
+        <div className="waveform" role="img" aria-label="Audio waveform">
           {Array.from({ length: 48 }, (_, i) => (
             <i key={i} style={{ height: `${18 + ((i * 17) % 50)}%` }} />
           ))}
         </div>
         <div className="studio-transcript">
           <span className="speaker-label">
-            <span className="speaker-dot" /> Jordan · 10:42
+            <span className="speaker-dot" aria-hidden="true" /> Jordan · 10:42
           </span>
           <p>
             “The thing we keep hearing is that people don&apos;t need more
@@ -288,6 +352,7 @@ function AudioStudio({
           <Sparkles aria-hidden="true" />
           <span>Ask Sonora anything about this call...</span>
           <button
+            type="button"
             onClick={() => setIsPlaying(!isPlaying)}
             aria-label={isPlaying ? "Pause recording" : "Play recording"}
           >
@@ -314,14 +379,14 @@ function AudioStudio({
 function AudioVisualizer() {
   return (
     <div className="visualizer-card w-full">
-      <div className="visualizer-glow" />
+      <div className="visualizer-glow" aria-hidden="true" />
       <div className="visualizer-top">
         <span>
           <Headphones aria-hidden="true" /> sonora / focus mode
         </span>
         <span>AI ACTIVE</span>
       </div>
-      <div className="orb">
+      <div className="orb" aria-hidden="true">
         <div className="orb-core" />
         <div className="orb-ring ring-one" />
         <div className="orb-ring ring-two" />
@@ -331,7 +396,7 @@ function AudioVisualizer() {
         <strong>Listening for the signal</strong>
         <span>Understanding context across 4 conversations</span>
       </div>
-      <div className="visualizer-bars">
+      <div className="visualizer-bars" aria-hidden="true">
         {Array.from({ length: 32 }, (_, i) => (
           <i key={i} style={{ height: `${20 + ((i * 29) % 70)}%` }} />
         ))}
@@ -384,7 +449,9 @@ function WorkflowShowcase() {
             Saved insights <b>09</b>
           </span>
           <div className="sidebar-bottom">
-            <span className="mini-avatar">MC</span>
+            <span className="mini-avatar" aria-hidden="true">
+              MC
+            </span>
             <small>Maya&apos;s workspace</small>
           </div>
         </div>
@@ -392,7 +459,7 @@ function WorkflowShowcase() {
           <div className="workflow-toolbar">
             <span>Customer research / May 14</span>
             <span className="status-pill">
-              <span /> analyzed
+              <span aria-hidden="true" /> analyzed
             </span>
           </div>
           <div className="workflow-title">
@@ -403,9 +470,11 @@ function WorkflowShowcase() {
               <strong>Onboarding feedback — Acme</strong>
               <small>42:18 · 6 speakers · recorded today</small>
             </div>
-            <button aria-label="More options">•••</button>
+            <button type="button" aria-label="More options">
+              •••
+            </button>
           </div>
-          <div className="workflow-wave">
+          <div className="workflow-wave" aria-hidden="true">
             {Array.from({ length: 36 }, (_, i) => (
               <i key={i} style={{ height: `${22 + ((i * 23) % 62)}%` }} />
             ))}
@@ -468,16 +537,16 @@ function Testimonials() {
     },
   ];
   return (
-    <section className="w-full flex justify-between my-16">
-      <div className="w-full ">
+    <section className="w-full flex flex-col lg:flex-row justify-between gap-10 lg:gap-12 my-12 lg:my-16">
+      <div className="w-full lg:w-1/3 lg:shrink-0">
         <p className="eyebrow">The people who use it</p>
-        <p className="text-6xl">
+        <h2 className="text-4xl sm:text-5xl lg:text-6xl">
           Good words from
           <br />
           <em>busy minds.</em>
-        </p>
+        </h2>
       </div>
-      <div className="testimonial-grid">
+      <div className="testimonial-grid w-full">
         {quotes.map(({ quote, name, role }) => (
           <article className="testimonial-card" key={name}>
             <Quote aria-hidden="true" />
@@ -497,23 +566,29 @@ function Footer() {
   return (
     <footer>
       <div className="footer-top">
-        <a className="wordmark" href="#top">
-          <span className="wordmark-dot" />
+        <a className="wordmark" href="#top" aria-label="Sonora home">
+          <span className="wordmark-dot" aria-hidden="true" />
           Sonora<span className="wordmark-ai">.ai</span>
         </a>
         <p>Your ideas, in focus.</p>
-        <a className="button button-light" href="#demo">
+        <a
+          className="inline-flex items-center gap-2 min-h-11 underline-offset-4 hover:underline"
+          href="#demo"
+        >
           Join the waitlist <ArrowUpRight aria-hidden="true" />
         </a>
       </div>
       <div className="footer-bottom">
         <span>© 2026 Sonora AI, Inc.</span>
-        <div>
-          <a href="#product">Product</a>
-          <a href="#solutions">Solutions</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#company">Company</a>
-        </div>
+        <nav aria-label="Footer">
+          <div>
+            {navItems.map((item) => (
+              <a key={item.href} href={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </nav>
         <span>Built for better listening.</span>
       </div>
     </footer>

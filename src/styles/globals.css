@@ -1456,3 +1456,260 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Responsive + accessibility patch
+   APPEND THIS AT THE VERY END of globals.css (it must come last
+   so it overrides the earlier unlayered rules).
+   Layout/position/contrast only: the visual design is unchanged.
+   ════════════════════════════════════════════════════════════ */
+
+html {
+  scroll-padding-top: 5rem; /* anchors don't hide under the fixed nav */
+}
+
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.625rem 1rem;
+  background: var(--foreground);
+  color: var(--background);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* ── Nav ── */
+.site-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--background) 80%, transparent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+.site-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 1rem;
+  min-height: 56px;
+}
+.wordmark {
+  min-height: 44px;
+}
+.nav-links,
+.nav-actions {
+  gap: 1.75rem;
+}
+.nav-links a,
+.nav-login {
+  color: var(--muted-foreground);
+  padding: 0.75rem 0.25rem;
+}
+.nav-links a:hover,
+.nav-login:hover {
+  color: var(--foreground);
+}
+.nav-actions {
+  gap: 1rem;
+}
+
+.mobile-bar {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mobile-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 0.375rem;
+}
+.mobile-menu span {
+  width: 20px;
+  height: 1.5px;
+  margin: 3px 0;
+  background: var(--foreground);
+  transition: transform 0.2s ease;
+}
+.mobile-menu[aria-expanded="true"] span:first-child {
+  transform: translateY(4.5px) rotate(45deg);
+}
+.mobile-menu[aria-expanded="true"] span:last-child {
+  transform: translateY(-4.5px) rotate(-45deg);
+}
+
+.mobile-panel {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .nav-links,
+  .nav-actions {
+    display: none;
+  }
+  .mobile-bar {
+    display: flex;
+  }
+  .mobile-panel[data-open="true"] {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 1rem 1.25rem;
+    background: var(--background);
+    border-bottom: 1px solid var(--border);
+    max-height: calc(100dvh - 56px);
+    overflow-y: auto;
+  }
+  .mobile-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .mobile-panel a.mobile-cta {
+    margin-top: 1rem;
+    justify-content: center;
+    border-bottom: 0;
+  }
+}
+
+/* ── Hero studio card: stacked layouts get symmetric margins ── */
+@media (max-width: 1023px) {
+  .studio-card {
+    margin: 0;
+    min-height: 500px;
+  }
+}
+
+/* ── Logo strip: wrap instead of clipping ── */
+.logo-strip {
+  height: auto;
+  min-height: 88px;
+  margin: 0;
+  padding: 1.25rem 1rem;
+  list-style: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 2rem;
+  color: var(--muted-foreground);
+}
+.logo-strip li:nth-child(2),
+.logo-strip li:nth-child(5) {
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+@media (max-width: 760px) {
+  .logo-strip {
+    height: auto;
+    overflow: visible;
+    white-space: normal;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+    padding: 1rem;
+  }
+}
+
+/* ── Contrast: light mockup cards stay readable in dark mode ── */
+.studio-card,
+.studio-screen,
+.testimonial-card {
+  color: #171717;
+}
+.studio-top,
+.studio-bottom {
+  color: #5f5f59;
+}
+.studio-heading span,
+.studio-heading button,
+.speaker-label,
+.studio-prompt,
+.testimonial-card span {
+  color: #5f5f59;
+}
+.studio-heading button {
+  min-width: 44px;
+  min-height: 44px;
+}
+.eyebrow {
+  color: var(--muted-foreground);
+}
+
+/* ── Testimonials ── */
+.testimonial-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+@media (max-width: 1199px) {
+  .testimonial-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .testimonial-grid {
+    grid-template-columns: 1fr;
+  }
+  .testimonial-card {
+    min-height: 0;
+    gap: 1rem;
+  }
+}
+
+/* ── Numbers ── */
+@media (max-width: 760px) {
+  .number-list > div {
+    flex-wrap: wrap;
+    padding: 1rem 0;
+    gap: 0.25rem 1rem;
+  }
+  .number-list span {
+    font-size: 16px;
+  }
+}
+
+/* ── Footer ── */
+.footer-top {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-bottom {
+  gap: 1rem;
+}
+.footer-bottom,
+.footer-bottom a {
+  color: var(--muted-foreground);
+}
+.footer-bottom a {
+  display: inline-block;
+  padding: 0.5rem 0;
+}
+.footer-bottom a:hover {
+  color: var(--foreground);
+}
+@media (max-width: 760px) {
+  .footer-bottom div {
+    gap: 0 1.25rem;
+  }
+}
+
+/* ── Mockup safety on small screens ── */
+.visualizer-card,
+.studio-card,
+.workflow-ui {
+  max-width: 100%;
+}

@@ -13,11 +13,11 @@ const mono = GeistMono;
 
 export const metadata: Metadata = {
   title: {
-    default: `${APP.name} — ${APP.tagline}`,
+    default: `${APP.name}`,
     template: `%s · ${APP.name}`,
   },
   description:
-    "Upload your documents, embed one line of script, and answer customer questions on your site around the clock.",
+    `${APP.tagline} .Upload your documents, embed one line of script, and answer customer questions on your site around the clock.`,
   metadataBase: new URL(APP.url),
   openGraph: { type: "website", siteName: APP.name },
 };
