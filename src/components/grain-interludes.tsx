@@ -60,8 +60,7 @@ export function GrainQuote() {
   return (
     <section className="grain-quote section-rule">
       <div className="grain-quote-noise" aria-hidden="true" />
-      <p className="eyebrow">A better default</p>
-      <blockquote>
+      <blockquote className="text-6xl">
         “The best interface for an idea is still a human voice.”
       </blockquote>
       <span className="grain-quote-caption">

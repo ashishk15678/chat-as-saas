@@ -21,6 +21,9 @@ import {
   WandSparkles,
   Zap,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ThemeToggle } from "@/components/theme";
 
 const features = [
   {
@@ -67,9 +70,13 @@ export default function Page() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   return (
-    <main className="site-shell">
-      <nav className="nav-bar" aria-label="Main navigation">
+    <>
+      <nav
+        className="flex w-full space-x-10 justify-between border-b border-border px-4 py-1 fixed top-0 backdrop-blur-2xl"
+        aria-label="Main navigation"
+      >
         <a className="wordmark" href="#top" aria-label="Sonora home">
+          <AsciiFire />
           <span className="wordmark-dot" />
           Sonora<span className="wordmark-ai">.ai</span>
         </a>
@@ -80,9 +87,12 @@ export default function Page() {
           <a href="#company">Company</a>
         </div>
         <div className="nav-actions">
+          <ThemeToggle />
           <a href="/login">Log in</a>
-          <a className="nav-cta" href="#demo">
-            Join waitlist <ArrowUpRight aria-hidden="true" />
+          <a href="#demo">
+            <Button>
+              Start now <ArrowUpRight aria-hidden="true" />
+            </Button>{" "}
           </a>
         </div>
         <button className="mobile-menu" aria-label="Open menu">
@@ -91,162 +101,156 @@ export default function Page() {
         </button>
       </nav>
 
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <AsciiFire />
-          <p className="eyebrow">
-            Audio intelligence for the way you work <span>↗</span>
-          </p>
-          <h1>
-            Make every
-            <br />
-            <em>conversation</em>
-            <br />
-            count.
-          </h1>
-          <p className="hero-description">
-            Sonora turns spoken ideas into clear, useful work. Record,
-            understand, and create with an AI that actually listens.
-          </p>
-          <a className="button button-dark" href="#demo">
-            Start listening <ArrowUpRight aria-hidden="true" />
-          </a>
-          <p className="hero-note">No credit card required</p>
-        </div>
-        <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
-      </section>
+      <main className=" w-full max-w-7xl mx-auto flex flex-col space-y-8">
+        <section className="flex w-full space-x-10 justify-between  mt-30">
+          <div className="p-8 w-full h-full flex flex-col justify-center my-auto bg-card ">
+            <h1 className="text-4xl">
+              Make every
+              { " "}<em>conversation</em> {" "}
+              count.
+            </h1>
+            <p className="text-2xl text-muted-foreground my-7">
+              Sonora turns spoken ideas into clear, useful work. Record,
+              understand, and create with an AI that actually listens.
+            </p>
+            <Button className={"w-full flex flex-row space-x-3 py-2 text-4xl"}>
+              <a href="/dashboard">Start listening</a>{" "}
+              <ArrowUpRight aria-hidden="true" />
+            </Button>
+            <p className="hero-note">No credit card required</p>
+          </div>
+          {/*<Card className="w-full">*/}
 
-      <div className="logo-strip" aria-label="Trusted by teams at">
-        <span>northstar</span>
-        <span>notion</span>
-        <span>Linear</span>
-        <span>loom</span>
-        <span>ARC</span>
-        <span>superhuman</span>
-      </div>
-      <section className="intro section-rule" id="product">
-        <div>
-          <p className="eyebrow">Why Sonora?</p>
-          <h2>
-            Less listening.
-            <br />
-            More doing.
-          </h2>
+            <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          {/*</Card>*/}
+        </section>
+
+        <div className="logo-strip" aria-label="Trusted by teams at">
+          <span>northstar</span>
+          <span>notion</span>
+          <span>Linear</span>
+          <span>loom</span>
+          <span>ARC</span>
+          <span>superhuman</span>
         </div>
-        <p className="intro-copy">
+
+        <div className="my-16">
+          <p className="text-4xl">
+            Less listening.
+            More doing.
+          </p>
+        <p className="text-2xl text-muted-foreground my-7">
           Between client calls, team syncs, and the ideas that happen in
           between, your best work is already spoken. Sonora captures the signal,
           removes the noise, and gives you back the good part.
         </p>
-      </section>
-      <section className="feature-grid" id="solutions">
-        {features.map(({ icon: Icon, title, body }, index) => (
-          <article className="feature-card" key={title}>
-            <div className="feature-icon">
-              <Icon aria-hidden="true" />
+        <section className="grid grid-cols-3 border border-border " id="solutions">
+          {features.map(({ icon: Icon, title, body }, index) => (
+            <article className="feature-card" key={title}>
+              <div className="feature-icon">
+                <Icon aria-hidden="true" />
+              </div>
+              <div>
+                <p className="feature-number">0{index + 1}</p>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </div>
+            </article>
+          ))}
+        </section>
+        </div>
+        <GrainInterludes />
+        <section className="flex justify-between w-full space-x-12">
+          <div className="split-copy border border-border p-8 w-full">
+            <p className="eyebrow">People + AI</p>
+            <h2>
+              Say it once.
+            <br />
+              <em>Ship it forever. </em>
+            </h2>
+            <p>
+              Sonora makes the distance between a thought and a finished thing
+              feel wonderfully small.
+            </p>
+            <ul className="check-list">
+              <li>
+                <Check aria-hidden="true" /> Capture meetings, notes, and
+                spontaneous ideas
+              </li>
+              <li>
+                <Check aria-hidden="true" /> Turn conversations into drafts and
+                decisions
+              </li>
+              <li>
+                <Check aria-hidden="true" /> Search your entire audio memory in
+                plain English
+              </li>
+            </ul>
+          </div>
+          <AudioVisualizer />
+        </section>
+        <WorkflowShowcase />
+        <GrainQuote />
+        <Testimonials />
+        <section className="w-full section-rule" id="pricing">
+          <p className="eyebrow">By the numbers</p>
+          <h2 className="text-4xl">
+            The math behind
+            better conversations.
+          </h2>
+          <div className="number-list text-xl">
+            <div>
+              <span>Average time saved per call</span>
+              <strong>
+                42<small>min</small>
+              </strong>
             </div>
             <div>
-              <p className="feature-number">0{index + 1}</p>
-              <h3>{title}</h3>
-              <p>{body}</p>
+              <span>Faster from idea to first draft</span>
+              <strong>6×</strong>
             </div>
-          </article>
-        ))}
-      </section>
-      <GrainInterludes />
-      <section className="split-section section-rule">
-        <div className="split-copy">
-          <p className="eyebrow">People + AI</p>
-          <h2>
-            Say it once.
-            <br />
-            <em>Ship it</em> forever.
+            <div>
+              <span>Words understood, not just transcribed</span>
+              <strong>∞</strong>
+            </div>
+            <div>
+              <span>Meetings you never need to re-listen to</span>
+              <strong>100%</strong>
+            </div>
+          </div>
+        </section>
+        <section className="my-12 w-full section-rule" id="company">
+          <h2 className="text-4xl">
+            Frequently asked
+            questions .
           </h2>
-          <p>
-            Sonora makes the distance between a thought and a finished thing
-            feel wonderfully small.
-          </p>
-          <ul className="check-list">
-            <li>
-              <Check aria-hidden="true" /> Capture meetings, notes, and
-              spontaneous ideas
-            </li>
-            <li>
-              <Check aria-hidden="true" /> Turn conversations into drafts and
-              decisions
-            </li>
-            <li>
-              <Check aria-hidden="true" /> Search your entire audio memory in
-              plain English
-            </li>
-          </ul>
-        </div>
-        <AudioVisualizer />
-      </section>
-      <WorkflowShowcase />
-      <GrainQuote />
-      <Testimonials />
-      <section className="numbers section-rule" id="pricing">
-        <p className="eyebrow">By the numbers</p>
-        <h2>
-          The math behind
-          <br />
-          better conversations.
-        </h2>
-        <div className="number-list">
-          <div>
-            <span>Average time saved per call</span>
-            <strong>
-              42<small>min</small>
-            </strong>
+          <div className="text-xl flex flex-col mt-6">
+            {faqs.map((faq, index) => (
+              <button
+                className="text-xl w-full flex justify-between py-4 border-b border-border"
+                key={faq}
+                onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+                aria-expanded={activeFaq === index}
+              >
+                <span>{faq}</span>
+                <ChevronDown
+                  className={activeFaq === index ? "rotated" : ""}
+                  aria-hidden="true"
+                />
+                {/*{activeFaq === index && (
+                  <small>
+                    We&apos;re building Sonora for thoughtful teams who want to
+                    spend less time managing audio and more time making work
+                    that matters.
+                  </small>
+                )}*/}
+              </button>
+            ))}
           </div>
-          <div>
-            <span>Faster from idea to first draft</span>
-            <strong>6×</strong>
-          </div>
-          <div>
-            <span>Words understood, not just transcribed</span>
-            <strong>∞</strong>
-          </div>
-          <div>
-            <span>Meetings you never need to re-listen to</span>
-            <strong>100%</strong>
-          </div>
-        </div>
-      </section>
-      <section className="faq section-rule" id="company">
-        <p className="eyebrow">Learn more</p>
-        <h2>
-          Frequently asked
-          <br />
-          questions
-        </h2>
-        <div className="faq-list">
-          {faqs.map((faq, index) => (
-            <button
-              className="faq-row"
-              key={faq}
-              onClick={() => setActiveFaq(activeFaq === index ? null : index)}
-              aria-expanded={activeFaq === index}
-            >
-              <span>{faq}</span>
-              <ChevronDown
-                className={activeFaq === index ? "rotated" : ""}
-                aria-hidden="true"
-              />
-              {activeFaq === index && (
-                <small>
-                  We&apos;re building Sonora for thoughtful teams who want to
-                  spend less time managing audio and more time making work that
-                  matters.
-                </small>
-              )}
-            </button>
-          ))}
-        </div>
-      </section>
-      <Footer />
-    </main>
+        </section>
+        <Footer />
+      </main>
+    </>
   );
 }
 
@@ -258,7 +262,7 @@ function AudioStudio({
   setIsPlaying: (value: boolean) => void;
 }) {
   return (
-    <div className="studio-card">
+    <div className="w-full h-full studio-card ">
       <div className="studio-top">
         <span>
           <span className="live-dot" /> live capture
@@ -317,7 +321,7 @@ function AudioStudio({
 
 function AudioVisualizer() {
   return (
-    <div className="visualizer-card">
+    <div className="visualizer-card w-full">
       <div className="visualizer-glow" />
       <div className="visualizer-top">
         <span>
@@ -472,14 +476,14 @@ function Testimonials() {
     },
   ];
   return (
-    <section className="testimonials section-rule">
-      <div className="testimonials-heading">
+    <section className="w-full flex justify-between my-16">
+      <div className="w-full ">
         <p className="eyebrow">The people who use it</p>
-        <h2>
+        <p className="text-6xl">
           Good words from
           <br />
           <em>busy minds.</em>
-        </h2>
+        </p>
       </div>
       <div className="testimonial-grid">
         {quotes.map(({ quote, name, role }) => (

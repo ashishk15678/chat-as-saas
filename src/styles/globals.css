@@ -529,7 +529,6 @@ button {
 }
 
 .site-shell .button {
-  display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 14px 16px;
@@ -1058,15 +1057,16 @@ button {
 }
 
 .number-list > div {
-  min-height: 90px;
+  min-height: 70px;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: larger;
 }
 
 .number-list span {
-  font-size: 11px;
+  font-size: 20px;
   color: #6f6f68;
 }
 
@@ -1084,7 +1084,7 @@ button {
 }
 
 .faq {
-  padding: 85px 7vw 125px;
+    width: 100%;
 }
 
 .faq-list {
