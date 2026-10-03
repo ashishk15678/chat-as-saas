@@ -54,7 +54,8 @@ export default function Page() {
   // Close the mobile menu with Escape
   useEffect(() => {
     if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
+    const onKey = (e: KeyboardEvent) =>
+      e.key === "Escape" && setMenuOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
@@ -89,11 +90,10 @@ export default function Page() {
               <a className="nav-login" href="/login">
                 Log in
               </a>
-              <a href="/dashboard" >
-              <Button>
-
-                Start now <ArrowUpRight aria-hidden="true" />
-              </Button>
+              <a href="/dashboard">
+                <Button>
+                  Start now <ArrowUpRight aria-hidden="true" />
+                </Button>
               </a>
             </div>
 
@@ -130,13 +130,9 @@ export default function Page() {
             <a href="/login" onClick={() => setMenuOpen(false)}>
               Log in
             </a>
-            <a
-              href="/dashboard"
-              onClick={() => setMenuOpen(false)}
-            >
+            <a href="/dashboard" onClick={() => setMenuOpen(false)}>
               <Button className={"w-full text-2xl"} size={"lg"}>
-
-              Start now <ArrowUpRight aria-hidden="true" />
+                Start now <ArrowUpRight aria-hidden="true" />
               </Button>
             </a>
           </div>
@@ -160,12 +156,10 @@ export default function Page() {
               understand, and create with an AI that actually listens.
             </p>
 
-            <a
-              href="/dashboard"
-            >
-            <Button className={"flex justify-center gap-x-2 text-2xl w-full"}>
-              Start listening <ArrowUpRight aria-hidden="true" />
-</Button>
+            <a href="/dashboard">
+              <Button className={"flex justify-center gap-x-2 text-2xl w-full"}>
+                Start listening <ArrowUpRight aria-hidden="true" />
+              </Button>
             </a>
             <p className="hero-note">No credit card required</p>
           </div>
@@ -279,7 +273,7 @@ export default function Page() {
                       <ChevronDown
                         className={cn(
                           "size-5 shrink-0 transition-transform",
-                          open && "rotate-180"
+                          open && "rotate-180",
                         )}
                         aria-hidden="true"
                       />

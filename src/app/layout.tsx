@@ -16,8 +16,7 @@ export const metadata: Metadata = {
     default: `${APP.name}`,
     template: `%s · ${APP.name}`,
   },
-  description:
-    `${APP.tagline} .Upload your documents, embed one line of script, and answer customer questions on your site around the clock.`,
+  description: `${APP.tagline} .Upload your documents, embed one line of script, and answer customer questions on your site around the clock.`,
   metadataBase: new URL(APP.url),
   openGraph: { type: "website", siteName: APP.name },
 };
