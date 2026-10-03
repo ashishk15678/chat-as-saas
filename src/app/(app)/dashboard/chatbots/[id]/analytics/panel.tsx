@@ -38,18 +38,13 @@ export function AnalyticsPanel({ chatbotId }: { chatbotId: string }) {
       </div>
 
       <div className="panel-pad">
-        <h2 className="mb-5 font-medium">Daily messages</h2>
-        {/* Flat bars, one colour. A chart library would be heavier than the chart. */}
-        <div className="flex h-40 items-end gap-[3px]">
+        <h2 className="mb-4 text-sm font-medium">Daily messages</h2>
+        <div className="flex h-28 items-end gap-px sm:h-40 sm:gap-[3px]">
           {data.daily.map((d) => (
-            <div
-              key={d.day}
-              className="group relative flex-1"
-              title={`${d.day}: ${d.messages}`}
-            >
+            <div key={d.day} className="group relative flex-1" title={`${d.day}: ${d.messages}`}>
               <div
                 className="bg-primary/85 hover:bg-primary rounded-t-sm transition-colors"
-                style={{ height: `${(d.messages / peak) * 160}px` }}
+                style={{ height: `${(d.messages / peak) * 100}%`, minHeight: "2px" }}
               />
             </div>
           ))}

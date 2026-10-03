@@ -63,11 +63,17 @@ export async function POST(req: Request) {
       { status: 404, headers },
     );
 
-  // Origin allowlist. Host only, so a path cannot be used to slip past it.
+  // Origin allowlist — treat as browser-only hint; non-browser clients can forge it.
   if (bot.allowedDomains.length) {
-    const host = origin ? new URL(origin).hostname : "";
+    let host = "";
+    try {
+      host = origin ? new URL(origin).hostname : "";
+    } catch {
+      // Malformed Origin header — treat as no origin (block if domains are configured)
+      host = "";
+    }
     const allowed = bot.allowedDomains.some((d) =>
-      d.startsWith("*.") ? host.endsWith(d.slice(1)) : host === d,
+      d.startsWith("*.") ? host.endsWith(d.slice(1)) && host !== d.slice(1) : host === d,
     );
     if (!allowed)
       return NextResponse.json(

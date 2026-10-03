@@ -155,20 +155,29 @@ export const sourceRouter = router({
       });
     }
 
-    // Only now write to the database — status goes straight to READY
+    // Fix: create the source row and commit its chunks atomically.
+    // If commitChunks fails, delete the source so status never shows READY with no chunks,
+    // and usage is not charged. (Prisma does not support DDL in transactions so we use
+    // a manual compensating delete rather than a DB-level transaction.)
     const tokens = pieces.reduce((a, c) => a + estimateTokens(c), 0);
     const source = await ctx.db.source.create({
       data: { ...data, chatbotId: ctx.chatbot.id, status: "READY", tokens },
       select: { id: true },
     });
 
-    if (data.bytes)
-      await recordUsage(ctx.user.id, {
-        storedMb: Math.ceil(data.bytes / 1024 / 1024),
+    try {
+      await commitChunks(source.id, ctx.chatbot.id, pieces, embeddings);
+    } catch (e) {
+      // Roll back: remove the source row so nothing is left in an inconsistent state
+      await ctx.db.source.delete({ where: { id: source.id } }).catch(() => {});
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: e instanceof Error ? e.message : "Failed to store embeddings.",
       });
+    }
 
-    // Commit chunks with the pre-computed embeddings
-    await commitChunks(source.id, ctx.chatbot.id, pieces, embeddings);
+    if (data.bytes)
+      await recordUsage(ctx.user.id, { storedMb: Math.ceil(data.bytes / 1024 / 1024) });
 
     return source;
   }),

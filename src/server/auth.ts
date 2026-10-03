@@ -2,18 +2,38 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "./db";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 export const auth = betterAuth({
-  baseURL:
-    process.env.BETTER_AUTH_URL ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000",
+  // Fix: fail fast in production when auth URL is missing rather than silently
+  // using localhost:3000, which would redirect OAuth callbacks to the wrong host.
+  baseURL: (() => {
+    const url = process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL;
+    if (!url && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "[auth] BETTER_AUTH_URL or NEXT_PUBLIC_APP_URL must be set in production.",
+      );
+    }
+    return url ?? "http://localhost:3000";
+  })(),
   secret: process.env.BETTER_AUTH_SECRET,
   database: prismaAdapter(db, { provider: "postgresql" }),
 
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }) => {
+      resend.emails.send({
+        from: "Ashish <ashish@chatbot.ashishkr.com>",
+        to: user.email,
+        subject: "Reset your password",
+        html: `Click <a href="${url}">here</a> to reset your password.`,
+      });
+    },
   },
 
   socialProviders: {
@@ -30,6 +50,17 @@ export const auth = betterAuth({
   },
 
   plugins: [nextCookies()],
+
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      resend.emails.send({
+        from: "Ashish <ashish@chatbot.ashishkr.com>",
+        to: user.email,
+        subject: "Verify your email address",
+        html: `Click <a href="${url}">here</a> to verify your email.`,
+      });
+    },
+  },
 
   databaseHooks: {
     user: {

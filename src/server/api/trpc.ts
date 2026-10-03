@@ -64,11 +64,7 @@ export const writeProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   return next();
 });
 
-/**
- * Ownership gate. Any procedure taking { chatbotId } gets the row injected and
- * is guaranteed it belongs to the caller.
- */
-export const botProcedure = writeProcedure
+export const botProcedure = protectedProcedure
   .input((raw) => {
     const parsed = (raw ?? {}) as { chatbotId?: unknown };
     id.parse(parsed.chatbotId);

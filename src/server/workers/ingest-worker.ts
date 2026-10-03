@@ -1,29 +1,50 @@
 import { dequeueIngest } from "./queue";
 import { ingestSource } from "../services/ingest";
 
-/**
- * Run this as a separate always-on process (`npm run worker`).
- * Scale horizontally by starting more of them; the queue is the coordinator.
- */
-const CONCURRENCY = Number(process.env.INGEST_CONCURRENCY ?? 4);
+const rawConcurrency = process.env.INGEST_CONCURRENCY ?? "4";
+const CONCURRENCY = parseInt(rawConcurrency, 10);
+
+// Fix: validate concurrency before starting — reject NaN, 0, or negatives.
+if (!Number.isInteger(CONCURRENCY) || CONCURRENCY < 1) {
+  console.error(
+    `[worker] INGEST_CONCURRENCY="${rawConcurrency}" is not a positive integer. Exiting.`,
+  );
+  process.exit(1);
+}
+
 let running = 0;
 
-async function loop() {
+async function loop(): Promise<void> {
   while (true) {
     if (running >= CONCURRENCY) {
       await new Promise((r) => setTimeout(r, 200));
       continue;
     }
-    const sourceId = await dequeueIngest();
+
+    let sourceId: string | null;
+    try {
+      sourceId = await dequeueIngest();
+    } catch (e) {
+      // Fix: catch dequeue errors so a temporary queue outage doesn't kill the worker.
+      console.error("[worker] dequeue error — retrying in 5 s:", e);
+      await new Promise((r) => setTimeout(r, 5_000));
+      continue;
+    }
+
     if (!sourceId) {
       await new Promise((r) => setTimeout(r, 1_000));
       continue;
     }
+
     running++;
     ingestSource(sourceId)
-      .catch((e) => console.error("ingest failed", sourceId, e))
+      .catch((e) => console.error("[worker] ingest failed", sourceId, e))
       .finally(() => running--);
   }
 }
 
-loop();
+// Fix: catch a top-level loop rejection (shouldn't happen now, but belt-and-suspenders).
+loop().catch((e) => {
+  console.error("[worker] fatal loop error:", e);
+  process.exit(1);
+});

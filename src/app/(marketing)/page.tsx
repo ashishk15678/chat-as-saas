@@ -139,7 +139,7 @@ export default function Page() {
             between, your best work is already spoken. Sonora captures the
             signal, removes the noise, and gives you back the good part.
           </p>
-          <section
+          {/* <section
             className="grid grid-cols-3 border border-border "
             id="solutions"
           >
@@ -155,7 +155,7 @@ export default function Page() {
                 </div>
               </article>
             ))}
-          </section>
+          </section> */}
         </div>
         <GrainInterludes />
         <section className="flex justify-between w-full space-x-12">

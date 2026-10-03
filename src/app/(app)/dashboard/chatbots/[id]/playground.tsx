@@ -85,8 +85,9 @@ export function Playground({
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-      <div className="panel h-[580px] overflow-hidden">
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[1fr_260px]">
+      {/* Chat window — full height on desktop, fixed shorter on mobile */}
+      <div className="panel h-[480px] overflow-hidden sm:h-[540px] lg:h-[580px]">
         <ChatWindow
           key={sessionKey}
           className="h-full"
@@ -99,7 +100,7 @@ export function Playground({
         />
       </div>
 
-      <aside className="panel-pad h-fit space-y-4 text-sm">
+      <aside className="panel-pad space-y-4 text-sm lg:h-fit">
         <div className="space-y-1.5">
           <h2 className="font-semibold">Playground</h2>
           <p className="text-muted-foreground text-xs leading-relaxed">

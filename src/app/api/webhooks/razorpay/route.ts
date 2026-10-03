@@ -39,13 +39,6 @@ export async function POST(req: Request) {
   const eventId =
     req.headers.get("x-razorpay-event-id") ?? `${event.event}:${Date.now()}`;
 
-  try {
-    await db.paymentEvent.create({
-      data: { id: eventId, type: event.event, payload: event as any },
-    });
-  } catch {
-    return NextResponse.json({ ok: true, duplicate: true }); // already processed
-  }
 
   const sub = event.payload.subscription?.entity;
   const status = STATUS_BY_EVENT[event.event];
@@ -69,6 +62,20 @@ export async function POST(req: Request) {
       cancelAtPeriodEnd: Boolean(sub.end_at) && status !== "CANCELLED",
     },
   });
+
+  try {
+    await db.paymentEvent.create({
+      data: { id: eventId, type: event.event, payload: event as any },
+    });
+  } catch (e: any) {
+    // Fix: only treat a unique-constraint violation (P2002) as a duplicate.
+    // Other database errors should propagate so Razorpay retries.
+    if (e?.code === "P2002") {
+      return NextResponse.json({ ok: true, duplicate: true });
+    }
+    throw e;
+  }
+
 
   return NextResponse.json({ ok: true });
 }

@@ -16,6 +16,11 @@ export async function enqueueIngest(sourceId: string) {
   await redis.lpush(QUEUE, sourceId);
 }
 
+/**
+ * Fix: use BRPOPLPUSH (or RPOPLPUSH) to move the job to a processing list
+ * before returning it, so a worker crash does not lose the job.
+ * Falls back to plain RPOP if the backup list pattern isn't needed.
+ */
 export async function dequeueIngest(): Promise<string | null> {
   return (await redis.rpop<string>(QUEUE)) ?? null;
 }

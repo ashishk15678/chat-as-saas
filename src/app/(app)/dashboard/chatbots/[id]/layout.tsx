@@ -24,13 +24,13 @@ export default async function ChatbotLayout({
       >
         <ChevronLeft className="size-4" /> Chatbots
       </Link>
-      <div className="flex flex-wrap items-center gap-3 pb-5">
+      <div className="flex flex-wrap items-center gap-2 pb-5">
         <span
-          className="size-3 rounded-md"
+          className="size-3 shrink-0 rounded-md"
           style={{ background: bot.accent }}
           aria-hidden
         />
-        <h1 className="text-2xl font-semibold">{bot.name}</h1>
+        <h1 className="min-w-0 truncate text-xl font-semibold sm:text-2xl">{bot.name}</h1>
         <StatusDot status={bot.status} />
       </div>
       <BotTabs id={id} />

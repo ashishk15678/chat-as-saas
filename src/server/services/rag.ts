@@ -5,17 +5,9 @@ import { embedder } from "./embedder";
 import { RAG } from "@/lib/constants";
 
 export type Citation = { sourceId: string; title: string };
-type Retrieved = {
-  content: string;
-  sourceId: string;
-  title: string;
-  score: number;
-};
+type Retrieved = { content: string; sourceId: string; title: string; score: number };
 
-export async function retrieve(
-  chatbotId: string,
-  query: string,
-): Promise<Retrieved[]> {
+export async function retrieve(chatbotId: string, query: string): Promise<Retrieved[]> {
   const { embedding } = await embed({
     model: embedder,
     value: query,
@@ -37,7 +29,9 @@ export function buildContext(rows: Retrieved[]) {
   const parts: string[] = [];
   const citations: Citation[] = [];
   for (const r of rows) {
-    if (used + r.content.length > RAG.maxContextChars) break;
+    // Fix: skip oversized chunks instead of breaking so later smaller chunks can still be included.
+    if (r.content.length > RAG.maxContextChars) continue;
+    if (used + r.content.length > RAG.maxContextChars) continue;
     parts.push(`[${r.title}]\n${r.content}`);
     used += r.content.length;
     if (!citations.some((c) => c.sourceId === r.sourceId))
@@ -47,18 +41,15 @@ export function buildContext(rows: Retrieved[]) {
 }
 
 export async function answer(
-  bot: {
-    id: string;
-    systemPrompt: string;
-    fallbackMessage: string;
-    model: string;
-    temperature: number;
-  },
+  bot: { id: string; systemPrompt: string; fallbackMessage: string; model: string; temperature: number },
   history: { role: "user" | "assistant"; content: string }[],
 ) {
   const question = history.at(-1)?.content ?? "";
   const rows = await retrieve(bot.id, question);
   const { context, citations } = buildContext(rows);
+  // Fix: derive grounded from whether any chunks were actually included in context,
+  // not just whether rows were retrieved (a retrieved-but-skipped chunk is not grounded).
+  const grounded = citations.length > 0;
 
   const result = streamText({
     model: groq(bot.model),
@@ -75,5 +66,5 @@ ${context || "(no matching documents)"}`,
     messages: history,
   });
 
-  return { result, citations, grounded: rows.length > 0 };
+  return { result, citations, grounded: citations.length > 0 };
 }

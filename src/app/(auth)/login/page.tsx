@@ -61,7 +61,7 @@ function LoginForm() {
       </header>
 
       {/* Content */}
-      <main className="flex flex-1 items-center justify-center px-5 pb-24">
+      <main className="flex flex-1 items-center justify-center px-4 pb-12 pt-2 sm:px-6 sm:pb-20">
         <div className="w-full max-w-[420px]">
           {/* Heading */}
           <div className="mb-8">

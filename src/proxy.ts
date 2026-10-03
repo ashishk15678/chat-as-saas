@@ -11,7 +11,8 @@ export function proxy(req: NextRequest) {
 
   if (!hasSession) {
     const url = new URL("/login", req.url);
-    url.searchParams.set("next", req.nextUrl.pathname);
+    // Fix: include query string so the return path restores filtered views.
+    url.searchParams.set("next", req.nextUrl.pathname + req.nextUrl.search);
     return NextResponse.redirect(url);
   }
 
