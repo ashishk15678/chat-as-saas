@@ -10,16 +10,19 @@ import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 const NAV = [
-  { href: "/dashboard",          label: "Overview",     icon: LayoutGrid, exact: true },
-  { href: "/dashboard/chatbots", label: "Chatbots",     icon: Bot },
-  { href: "/dashboard/billing",  label: "Plan & usage", icon: CreditCard },
-  { href: "/dashboard/settings", label: "Settings",     icon: Settings },
+  { href: "/dashboard", label: "Overview", icon: LayoutGrid, exact: true },
+  { href: "/dashboard/chatbots", label: "Chatbots", icon: Bot },
+  { href: "/dashboard/billing", label: "Plan & usage", icon: CreditCard },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings },
 ];
 
 function Px() {
   return (
     <div className="pixel-deco shrink-0">
-      <span /><span /><span /><span />
+      <span />
+      <span />
+      <span />
+      <span />
     </div>
   );
 }
@@ -70,9 +73,15 @@ export function MobileNav() {
       >
         {/* Header */}
         <div className="flex h-14 items-center justify-between border-b border-sidebar-border px-4">
-          <Link href="/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-2.5">
+          <Link
+            href="/dashboard"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-2.5"
+          >
             <Px />
-            <span className="text-[15px] font-semibold tracking-[-0.04em]">{APP.name}</span>
+            <span className="text-[15px] font-semibold tracking-[-0.04em]">
+              {APP.name}
+            </span>
           </Link>
           <button
             type="button"

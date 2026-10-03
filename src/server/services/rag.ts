@@ -5,9 +5,17 @@ import { embedder } from "./embedder";
 import { RAG } from "@/lib/constants";
 
 export type Citation = { sourceId: string; title: string };
-type Retrieved = { content: string; sourceId: string; title: string; score: number };
+type Retrieved = {
+  content: string;
+  sourceId: string;
+  title: string;
+  score: number;
+};
 
-export async function retrieve(chatbotId: string, query: string): Promise<Retrieved[]> {
+export async function retrieve(
+  chatbotId: string,
+  query: string,
+): Promise<Retrieved[]> {
   const { embedding } = await embed({
     model: embedder,
     value: query,
@@ -41,7 +49,13 @@ export function buildContext(rows: Retrieved[]) {
 }
 
 export async function answer(
-  bot: { id: string; systemPrompt: string; fallbackMessage: string; model: string; temperature: number },
+  bot: {
+    id: string;
+    systemPrompt: string;
+    fallbackMessage: string;
+    model: string;
+    temperature: number;
+  },
   history: { role: "user" | "assistant"; content: string }[],
 ) {
   const question = history.at(-1)?.content ?? "";

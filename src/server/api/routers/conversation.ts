@@ -18,7 +18,11 @@ export const conversationRouter = router({
           rating: true,
           lastAt: true,
           _count: { select: { messages: true } },
-          messages: { take: 1, orderBy: { createdAt: "asc" }, select: { content: true } },
+          messages: {
+            take: 1,
+            orderBy: { createdAt: "asc" },
+            select: { content: true },
+          },
         },
       });
       const next = rows.length > input.limit ? rows.pop()!.id : null;
@@ -35,7 +39,12 @@ export const conversationRouter = router({
     ),
 
   analytics: botProcedure
-    .input(z.object({ chatbotId: id, days: z.number().int().min(7).max(90).default(30) }))
+    .input(
+      z.object({
+        chatbotId: id,
+        days: z.number().int().min(7).max(90).default(30),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const since = new Date(Date.now() - input.days * 864e5);
       const [daily, totals, unanswered] = await Promise.all([
@@ -61,11 +70,19 @@ export const conversationRouter = router({
           orderBy: { createdAt: "desc" },
           take: 10,
           // Return the prior user message content so the UI shows the question, not the empty answer
-          select: { id: true, content: true, createdAt: true, conversationId: true },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            conversationId: true,
+          },
         }),
       ]);
       return {
-        daily: daily.map((d) => ({ day: d.day.toISOString().slice(0, 10), messages: Number(d.messages) })),
+        daily: daily.map((d) => ({
+          day: d.day.toISOString().slice(0, 10),
+          messages: Number(d.messages),
+        })),
         conversations: totals._count._all,
         satisfaction: totals._avg.rating,
         unanswered,

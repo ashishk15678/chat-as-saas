@@ -23,11 +23,12 @@ export function TRPCReactProvider({ children }: { children: React.ReactNode }) {
       links: [
         httpBatchStreamLink({
           transformer: superjson,
-          url: typeof window === "undefined"
-            // Server-side: use absolute URL for SSR requests
-            ? `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/trpc`
-            // Browser-side: use relative URL — avoids cross-origin issues on alternate hostnames
-            : "/api/trpc",
+          url:
+            typeof window === "undefined"
+              ? // Server-side: use absolute URL for SSR requests
+                `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/trpc`
+              : // Browser-side: use relative URL — avoids cross-origin issues on alternate hostnames
+                "/api/trpc",
           headers: () => ({ "x-trpc-source": "react" }),
         }),
       ],

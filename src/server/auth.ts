@@ -6,7 +6,6 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-
 export const auth = betterAuth({
   // Fix: fail fast in production when auth URL is missing rather than silently
   // using localhost:3000, which would redirect OAuth callbacks to the wrong host.

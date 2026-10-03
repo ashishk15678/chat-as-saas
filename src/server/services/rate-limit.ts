@@ -27,7 +27,11 @@ function limiter(name: string, rpm: number) {
 
 export async function takeToken(name: string, subject: string, rpm: number) {
   const { success, reset, remaining } = await limiter(name, rpm).limit(subject);
-  return { ok: success, remaining, retryAfter: Math.max(0, Math.ceil((reset - Date.now()) / 1000)) };
+  return {
+    ok: success,
+    remaining,
+    retryAfter: Math.max(0, Math.ceil((reset - Date.now()) / 1000)),
+  };
 }
 
 export const LIMITS = { chat: 20, mutation: 60, upload: 20, auth: 10 } as const;

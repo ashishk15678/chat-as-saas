@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowUp, Mic, MicOff, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import {
+  ArrowUp,
+  Mic,
+  MicOff,
+  RotateCcw,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -55,13 +62,13 @@ declare global {
 // ─────────────────────────────────────────────────────────────────────────────
 function WaveformCanvas({ analyser }: { analyser: AnalyserNode | null }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef    = useRef<number>(0);
+  const rafRef = useRef<number>(0);
 
   // Kick off / tear down the draw loop whenever analyser changes
   const startLoop = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !analyser) return;
-    const ctx  = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const buf = new Uint8Array(analyser.frequencyBinCount);
@@ -75,16 +82,16 @@ function WaveformCanvas({ analyser }: { analyser: AnalyserNode | null }) {
       const H = canvas.height;
       ctx.clearRect(0, 0, W, H);
 
-      const bars  = 32;
-      const gap   = 2;
-      const bw    = (W - gap * (bars - 1)) / bars;
-      const step  = Math.floor(buf.length / bars);
+      const bars = 32;
+      const gap = 2;
+      const bw = (W - gap * (bars - 1)) / bars;
+      const step = Math.floor(buf.length / bars);
 
       for (let i = 0; i < bars; i++) {
-        const v  = buf[i * step] / 255;
-        const h  = Math.max(2, v * H);
-        const x  = i * (bw + gap);
-        const y  = (H - h) / 2;
+        const v = buf[i * step] / 255;
+        const h = Math.max(2, v * H);
+        const x = i * (bw + gap);
+        const y = (H - h) / 2;
 
         // Fade from accent (bottom) to lighter (top)
         const grad = ctx.createLinearGradient(0, y, 0, y + h);
@@ -110,7 +117,8 @@ function WaveformCanvas({ analyser }: { analyser: AnalyserNode | null }) {
 
   // When analyser arrives start, when it's gone stop
   useEffect(() => {
-    if (analyser) startLoop(); else stopLoop();
+    if (analyser) startLoop();
+    else stopLoop();
     return stopLoop;
   }, [analyser, startLoop, stopLoop]);
 
@@ -138,16 +146,19 @@ function useVoice({
   // Lazy init — no useEffect needed for capability detection
   const [supported] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return !!(window.SpeechRecognition || window.webkitSpeechRecognition) && !!window.speechSynthesis;
+    return (
+      !!(window.SpeechRecognition || window.webkitSpeechRecognition) &&
+      !!window.speechSynthesis
+    );
   });
 
   const [listening, setListening] = useState(false);
-  const [speaking,  setSpeaking]  = useState(false);
-  const [analyser,  setAnalyser]  = useState<AnalyserNode | null>(null);
+  const [speaking, setSpeaking] = useState(false);
+  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const audioCtxRef    = useRef<AudioContext | null>(null);
-  const streamRef      = useRef<MediaStream | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   // ── TTS stop ──────────────────────────────────────────────────────────────
   const stopSpeaking = useCallback(() => {
@@ -165,7 +176,9 @@ function useVoice({
   }, []);
 
   const stopListening = useCallback(() => {
-    try { recognitionRef.current?.stop(); } catch {}
+    try {
+      recognitionRef.current?.stop();
+    } catch {}
     setListening(false);
     teardownAudio();
   }, [teardownAudio]);
@@ -177,38 +190,52 @@ function useVoice({
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
 
-    try { recognitionRef.current?.abort(); } catch {}
+    try {
+      recognitionRef.current?.abort();
+    } catch {}
 
     // Set up Web Audio for the waveform visualizer
-    navigator.mediaDevices?.getUserMedia({ audio: true }).then((stream) => {
-      streamRef.current = stream;
-      const ctx  = new AudioContext();
-      const src  = ctx.createMediaStreamSource(stream);
-      const node = ctx.createAnalyser();
-      node.fftSize = 64;
-      src.connect(node);
-      audioCtxRef.current = ctx;
-      setAnalyser(node);
-    }).catch(() => { /* mic permission denied — waveform just won't show */ });
+    navigator.mediaDevices
+      ?.getUserMedia({ audio: true })
+      .then((stream) => {
+        streamRef.current = stream;
+        const ctx = new AudioContext();
+        const src = ctx.createMediaStreamSource(stream);
+        const node = ctx.createAnalyser();
+        node.fftSize = 64;
+        src.connect(node);
+        audioCtxRef.current = ctx;
+        setAnalyser(node);
+      })
+      .catch(() => {
+        /* mic permission denied — waveform just won't show */
+      });
 
     const rec = new SR();
-    rec.continuous    = false;
+    rec.continuous = false;
     rec.interimResults = true;
-    rec.lang           = "en-US";
+    rec.lang = "en-US";
 
-    rec.onstart  = () => setListening(true);
-    rec.onend    = () => { setListening(false); teardownAudio(); };
-    rec.onerror  = () => { setListening(false); teardownAudio(); };
+    rec.onstart = () => setListening(true);
+    rec.onend = () => {
+      setListening(false);
+      teardownAudio();
+    };
+    rec.onerror = () => {
+      setListening(false);
+      teardownAudio();
+    };
 
     rec.onresult = (e: SpeechRecognitionEvent) => {
-      let interim = "", final = "";
+      let interim = "",
+        final = "";
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
         if (e.results[i].isFinal) final += t;
         else interim += t;
       }
       if (interim) onInterimTranscript(interim);
-      if (final)   onFinalTranscript(final.trim());
+      if (final) onFinalTranscript(final.trim());
     };
 
     recognitionRef.current = rec;
@@ -217,33 +244,53 @@ function useVoice({
 
   // ── Toggle ────────────────────────────────────────────────────────────────
   const toggle = useCallback(() => {
-    if (speaking)  { stopSpeaking();   return; }
-    if (listening) { stopListening(); return; }
+    if (speaking) {
+      stopSpeaking();
+      return;
+    }
+    if (listening) {
+      stopListening();
+      return;
+    }
     startListening();
   }, [speaking, listening, stopSpeaking, stopListening, startListening]);
 
   // ── TTS speak ─────────────────────────────────────────────────────────────
-  const speak = useCallback((text: string) => {
-    if (!window.speechSynthesis) return;
-    stopSpeaking();
+  const speak = useCallback(
+    (text: string) => {
+      if (!window.speechSynthesis) return;
+      stopSpeaking();
 
-    const clean = text
-      .replace(/\*\*/g, "").replace(/\*/g, "").replace(/_/g, "")
-      .replace(/`[^`]*`/g, "").replace(/#{1,6}\s/g, "")
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-      .replace(/\n+/g, ". ");
+      const clean = text
+        .replace(/\*\*/g, "")
+        .replace(/\*/g, "")
+        .replace(/_/g, "")
+        .replace(/`[^`]*`/g, "")
+        .replace(/#{1,6}\s/g, "")
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+        .replace(/\n+/g, ". ");
 
-    const utt     = new SpeechSynthesisUtterance(clean);
-    utt.rate      = 1.05;
-    utt.pitch     = 1;
-    utt.onstart   = () => setSpeaking(true);
-    utt.onend     = () => setSpeaking(false);
-    utt.onerror   = () => setSpeaking(false);
-    window.speechSynthesis.speak(utt);
-    setSpeaking(true);
-  }, [stopSpeaking]);
+      const utt = new SpeechSynthesisUtterance(clean);
+      utt.rate = 1.05;
+      utt.pitch = 1;
+      utt.onstart = () => setSpeaking(true);
+      utt.onend = () => setSpeaking(false);
+      utt.onerror = () => setSpeaking(false);
+      window.speechSynthesis.speak(utt);
+      setSpeaking(true);
+    },
+    [stopSpeaking],
+  );
 
-  return { listening, speaking, supported, analyser, toggle, speak, stopSpeaking };
+  return {
+    listening,
+    speaking,
+    supported,
+    analyser,
+    toggle,
+    speak,
+    stopSpeaking,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -267,8 +314,8 @@ export function ChatWindow({
   onMessagesChange?: (messages: ChatMessage[]) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [draft, setDraft]       = useState("");
-  const [busy, setBusy]         = useState(false);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
 
   // Track whether the last question came via voice so we only speak back then
@@ -285,7 +332,10 @@ export function ChatWindow({
 
   // Only legitimate DOM side-effect in this component — scroll to bottom
   useEffect(() => {
-    scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: "smooth" });
+    scroller.current?.scrollTo({
+      top: scroller.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages, busy]);
 
   function pushMessages(next: ChatMessage[]) {
@@ -298,7 +348,10 @@ export function ChatWindow({
     if (!trimmed || busy) return;
 
     voice.stopSpeaking();
-    const next: ChatMessage[] = [...messages, { role: "user", content: trimmed }];
+    const next: ChatMessage[] = [
+      ...messages,
+      { role: "user", content: trimmed },
+    ];
     pushMessages(next);
     setDraft("");
     setBusy(true);
@@ -309,14 +362,22 @@ export function ChatWindow({
       // Only speak back if the question was asked by voice
       if (fromVoice) voice.speak(reply.content);
     } catch {
-      pushMessages([...next, { role: "assistant", content: "Something went wrong. Try again in a moment." }]);
+      pushMessages([
+        ...next,
+        {
+          role: "assistant",
+          content: "Something went wrong. Try again in a moment.",
+        },
+      ]);
     } finally {
       setBusy(false);
       lastInputWasVoiceRef.current = false;
     }
   }
 
-  function submit() { void submitText(draft, false); }
+  function submit() {
+    void submitText(draft, false);
+  }
 
   function reset() {
     voice.stopSpeaking();
@@ -324,25 +385,44 @@ export function ChatWindow({
     onReset?.();
   }
 
-  const cssVars = accent ? ({ "--chat-accent": accent } as React.CSSProperties) : undefined;
-  const micLabel = voice.speaking  ? "Stop speaking"
-                 : voice.listening ? "Stop listening"
-                 : "Voice input";
+  const cssVars = accent
+    ? ({ "--chat-accent": accent } as React.CSSProperties)
+    : undefined;
+  const micLabel = voice.speaking
+    ? "Stop speaking"
+    : voice.listening
+      ? "Stop listening"
+      : "Voice input";
 
   return (
-    <div style={cssVars} className={cn("bg-card flex h-full flex-col overflow-hidden", className)}>
-
+    <div
+      style={cssVars}
+      className={cn("bg-card flex h-full flex-col overflow-hidden", className)}
+    >
       {/* ── Message list ── */}
-      <div ref={scroller} className="flex-1 space-y-3 overflow-y-auto p-3 sm:p-4">
+      <div
+        ref={scroller}
+        className="flex-1 space-y-3 overflow-y-auto p-3 sm:p-4"
+      >
         <Bubble role="assistant" content={greeting} onSpeak={voice.speak} />
         {messages.map((m, i) => (
-          <Bubble key={i} {...m} onSpeak={m.role === "assistant" ? voice.speak : undefined} />
+          <Bubble
+            key={i}
+            {...m}
+            onSpeak={m.role === "assistant" ? voice.speak : undefined}
+          />
         ))}
         {busy && (
-          <div className="flex gap-1 px-1 py-2" aria-label="Assistant is thinking">
+          <div
+            className="flex gap-1 px-1 py-2"
+            aria-label="Assistant is thinking"
+          >
             {[0, 150, 300].map((d) => (
-              <span key={d} className="size-1.5 animate-bounce rounded-full bg-muted-foreground/50"
-                style={{ animationDelay: `${d}ms` }} />
+              <span
+                key={d}
+                className="size-1.5 animate-bounce rounded-full bg-muted-foreground/50"
+                style={{ animationDelay: `${d}ms` }}
+              />
             ))}
           </div>
         )}
@@ -351,11 +431,15 @@ export function ChatWindow({
       {/* ── Input area ── */}
       <div className="hairline shrink-0 p-2 sm:p-3">
         <form
-          onSubmit={(e) => { e.preventDefault(); submit(); }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
           className={cn(
             "focus-within:ring-ring border-input flex items-end gap-1.5 rounded-xl border p-1.5 transition-colors focus-within:ring-2",
             voice.listening && "border-red-400 bg-red-50/40 dark:bg-red-950/20",
-            voice.speaking  && "border-amber-400 bg-amber-50/40 dark:bg-amber-950/20",
+            voice.speaking &&
+              "border-amber-400 bg-amber-50/40 dark:bg-amber-950/20",
           )}
         >
           {/* Mic button */}
@@ -367,17 +451,23 @@ export function ChatWindow({
               title={micLabel}
               className={cn(
                 "press relative flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
-                voice.speaking  ? "bg-amber-500 text-white"
-                : voice.listening ? "bg-red-500 text-white"
-                : "text-muted-foreground hover:text-foreground",
+                voice.speaking
+                  ? "bg-amber-500 text-white"
+                  : voice.listening
+                    ? "bg-red-500 text-white"
+                    : "text-muted-foreground hover:text-foreground",
               )}
             >
               {voice.listening && (
                 <span className="absolute inset-0 animate-ping rounded-lg bg-red-400 opacity-40" />
               )}
-              {voice.listening ? <MicOff className="relative size-4" />
-               : voice.speaking ? <VolumeX className="relative size-4" />
-               : <Mic className="relative size-4" />}
+              {voice.listening ? (
+                <MicOff className="relative size-4" />
+              ) : voice.speaking ? (
+                <VolumeX className="relative size-4" />
+              ) : (
+                <Mic className="relative size-4" />
+              )}
             </button>
           )}
 
@@ -391,7 +481,10 @@ export function ChatWindow({
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
               }}
               rows={1}
               placeholder="Ask a question…"
@@ -405,7 +498,9 @@ export function ChatWindow({
             size="icon"
             className="press size-8 shrink-0 rounded-lg"
             style={accent ? { background: accent, color: "#fff" } : undefined}
-            disabled={(!draft.trim() && !voice.listening) || busy || voice.listening}
+            disabled={
+              (!draft.trim() && !voice.listening) || busy || voice.listening
+            }
             aria-label="Send"
           >
             <ArrowUp className="size-4" />
@@ -414,19 +509,30 @@ export function ChatWindow({
 
         <div className="mt-1 flex items-center justify-between px-1">
           {onReset && messages.length > 0 && (
-            <button type="button" onClick={reset}
-              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors">
+            <button
+              type="button"
+              onClick={reset}
+              className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
+            >
               <RotateCcw className="size-3" /> Start over
             </button>
           )}
           {voice.supported && (
-            <span className={cn(
-              "ml-auto text-[10px] transition-colors",
-              voice.listening ? "text-red-500 font-medium"
-              : voice.speaking  ? "text-amber-500 font-medium"
-              : "text-muted-foreground/40",
-            )}>
-              {voice.listening ? "● Listening" : voice.speaking ? "● Speaking" : "○ Voice"}
+            <span
+              className={cn(
+                "ml-auto text-[10px] transition-colors",
+                voice.listening
+                  ? "text-red-500 font-medium"
+                  : voice.speaking
+                    ? "text-amber-500 font-medium"
+                    : "text-muted-foreground/40",
+              )}
+            >
+              {voice.listening
+                ? "● Listening"
+                : voice.speaking
+                  ? "● Speaking"
+                  : "○ Voice"}
             </span>
           )}
         </div>
@@ -438,16 +544,23 @@ export function ChatWindow({
 // ─────────────────────────────────────────────────────────────────────────────
 // Bubble
 // ─────────────────────────────────────────────────────────────────────────────
-function Bubble({ role, content, citations, onSpeak }: ChatMessage & { onSpeak?: (t: string) => void }) {
+function Bubble({
+  role,
+  content,
+  citations,
+  onSpeak,
+}: ChatMessage & { onSpeak?: (t: string) => void }) {
   const mine = role === "user";
   return (
     <div className={cn("flex", mine && "justify-end")}>
-      <div className={cn(
-        "group relative max-w-[88%] rounded-2xl px-3 py-2.5 text-sm leading-relaxed sm:max-w-[85%] sm:px-3.5",
-        mine
-          ? "rounded-br-sm bg-foreground text-background"
-          : "rounded-bl-sm border border-border bg-muted text-foreground",
-      )}>
+      <div
+        className={cn(
+          "group relative max-w-[88%] rounded-2xl px-3 py-2.5 text-sm leading-relaxed sm:max-w-[85%] sm:px-3.5",
+          mine
+            ? "rounded-br-sm bg-foreground text-background"
+            : "rounded-bl-sm border border-border bg-muted text-foreground",
+        )}
+      >
         <p className="whitespace-pre-wrap">{content}</p>
         {citations && citations.length > 0 && (
           <p className="mt-1.5 text-xs opacity-60">

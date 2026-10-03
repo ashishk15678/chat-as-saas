@@ -177,7 +177,9 @@ export const sourceRouter = router({
     }
 
     if (data.bytes)
-      await recordUsage(ctx.user.id, { storedMb: Math.ceil(data.bytes / 1024 / 1024) });
+      await recordUsage(ctx.user.id, {
+        storedMb: Math.ceil(data.bytes / 1024 / 1024),
+      });
 
     return source;
   }),

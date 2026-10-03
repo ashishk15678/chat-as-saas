@@ -18,8 +18,8 @@ export function CopyField({
   const [copied, setCopied] = useState(false);
 
   async function copy() {
-    await navigator.clipboard.writeText(value).catch(()=>{
-      toast.error("Copy failed")
+    await navigator.clipboard.writeText(value).catch(() => {
+      toast.error("Copy failed");
       return;
     });
     setCopied(true);

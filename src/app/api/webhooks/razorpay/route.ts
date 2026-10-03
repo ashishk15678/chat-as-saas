@@ -39,7 +39,6 @@ export async function POST(req: Request) {
   const eventId =
     req.headers.get("x-razorpay-event-id") ?? `${event.event}:${Date.now()}`;
 
-
   const sub = event.payload.subscription?.entity;
   const status = STATUS_BY_EVENT[event.event];
   if (!sub || !status)
@@ -75,7 +74,6 @@ export async function POST(req: Request) {
     }
     throw e;
   }
-
 
   return NextResponse.json({ ok: true });
 }

@@ -34,10 +34,20 @@ export async function Topbar() {
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            render={<Button variant="ghost" size="icon" className="rounded-full" aria-label="Account" />}
+            render={
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                aria-label="Account"
+              />
+            }
           >
             <Avatar className="size-7">
-              <AvatarImage src={user?.image ?? undefined} alt={user?.name ?? ""} />
+              <AvatarImage
+                src={user?.image ?? undefined}
+                alt={user?.name ?? ""}
+              />
               <AvatarFallback className="bg-accent text-[11px] font-semibold text-foreground">
                 {user?.name?.[0]?.toUpperCase() ?? "U"}
               </AvatarFallback>
@@ -47,11 +57,17 @@ export async function Topbar() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="font-normal">
               <p className="text-sm font-semibold">{user?.name}</p>
-              <p className="text-muted-foreground truncate text-xs">{user?.email}</p>
+              <p className="text-muted-foreground truncate text-xs">
+                {user?.email}
+              </p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem render={<Link href="/dashboard/settings" />}>Settings</DropdownMenuItem>
-            <DropdownMenuItem render={<Link href="/dashboard/billing" />}>Plan & usage</DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/dashboard/settings" />}>
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem render={<Link href="/dashboard/billing" />}>
+              Plan & usage
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <SignOutButton />
           </DropdownMenuContent>

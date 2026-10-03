@@ -30,7 +30,9 @@ export default async function ChatbotLayout({
           style={{ background: bot.accent }}
           aria-hidden
         />
-        <h1 className="min-w-0 truncate text-xl font-semibold sm:text-2xl">{bot.name}</h1>
+        <h1 className="min-w-0 truncate text-xl font-semibold sm:text-2xl">
+          {bot.name}
+        </h1>
         <StatusDot status={bot.status} />
       </div>
       <BotTabs id={id} />

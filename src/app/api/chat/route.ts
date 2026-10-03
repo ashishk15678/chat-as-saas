@@ -73,7 +73,9 @@ export async function POST(req: Request) {
       host = "";
     }
     const allowed = bot.allowedDomains.some((d) =>
-      d.startsWith("*.") ? host.endsWith(d.slice(1)) && host !== d.slice(1) : host === d,
+      d.startsWith("*.")
+        ? host.endsWith(d.slice(1)) && host !== d.slice(1)
+        : host === d,
     );
     if (!allowed)
       return NextResponse.json(
