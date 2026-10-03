@@ -105,9 +105,7 @@ export default function Page() {
         <section className="flex w-full space-x-10 justify-between  mt-30">
           <div className="p-8 w-full h-full flex flex-col justify-center my-auto bg-card ">
             <h1 className="text-4xl">
-              Make every
-              { " "}<em>conversation</em> {" "}
-              count.
+              Make every <em>conversation</em> count.
             </h1>
             <p className="text-2xl text-muted-foreground my-7">
               Sonora turns spoken ideas into clear, useful work. Record,
@@ -121,7 +119,7 @@ export default function Page() {
           </div>
           {/*<Card className="w-full">*/}
 
-            <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          <AudioStudio isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
           {/*</Card>*/}
         </section>
 
@@ -135,29 +133,29 @@ export default function Page() {
         </div>
 
         <div className="my-16">
-          <p className="text-4xl">
-            Less listening.
-            More doing.
+          <p className="text-4xl">Less listening. More doing.</p>
+          <p className="text-2xl text-muted-foreground my-7">
+            Between client calls, team syncs, and the ideas that happen in
+            between, your best work is already spoken. Sonora captures the
+            signal, removes the noise, and gives you back the good part.
           </p>
-        <p className="text-2xl text-muted-foreground my-7">
-          Between client calls, team syncs, and the ideas that happen in
-          between, your best work is already spoken. Sonora captures the signal,
-          removes the noise, and gives you back the good part.
-        </p>
-        <section className="grid grid-cols-3 border border-border " id="solutions">
-          {features.map(({ icon: Icon, title, body }, index) => (
-            <article className="feature-card" key={title}>
-              <div className="feature-icon">
-                <Icon aria-hidden="true" />
-              </div>
-              <div>
-                <p className="feature-number">0{index + 1}</p>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </div>
-            </article>
-          ))}
-        </section>
+          <section
+            className="grid grid-cols-3 border border-border "
+            id="solutions"
+          >
+            {features.map(({ icon: Icon, title, body }, index) => (
+              <article className="feature-card" key={title}>
+                <div className="feature-icon">
+                  <Icon aria-hidden="true" />
+                </div>
+                <div>
+                  <p className="feature-number">0{index + 1}</p>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
+              </article>
+            ))}
+          </section>
         </div>
         <GrainInterludes />
         <section className="flex justify-between w-full space-x-12">
@@ -165,7 +163,7 @@ export default function Page() {
             <p className="eyebrow">People + AI</p>
             <h2>
               Say it once.
-            <br />
+              <br />
               <em>Ship it forever. </em>
             </h2>
             <p>
@@ -194,10 +192,7 @@ export default function Page() {
         <Testimonials />
         <section className="w-full section-rule" id="pricing">
           <p className="eyebrow">By the numbers</p>
-          <h2 className="text-4xl">
-            The math behind
-            better conversations.
-          </h2>
+          <h2 className="text-4xl">The math behind better conversations.</h2>
           <div className="number-list text-xl">
             <div>
               <span>Average time saved per call</span>
@@ -220,10 +215,7 @@ export default function Page() {
           </div>
         </section>
         <section className="my-12 w-full section-rule" id="company">
-          <h2 className="text-4xl">
-            Frequently asked
-            questions .
-          </h2>
+          <h2 className="text-4xl">Frequently asked questions .</h2>
           <div className="text-xl flex flex-col mt-6">
             {faqs.map((faq, index) => (
               <button

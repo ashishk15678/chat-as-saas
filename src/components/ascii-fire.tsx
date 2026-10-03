@@ -3,22 +3,10 @@
 import { useEffect, useState } from "react";
 
 const frames = [
-  [
-    "  ...    ",
-    "  /_\\    ",
-  ],
-  [
-    "  .:.    ",
-    " /::\\    ",
-  ],
-  [
-    "  ::::   ",
-    " //::\\   ",
-  ],
-  [
-    "  /\\     ",
-    " /::\\    ",
-  ],
+  ["  ...    ", "  /_\\    "],
+  ["  .:.    ", " /::\\    "],
+  ["  ::::   ", " //::\\   "],
+  ["  /\\     ", " /::\\    "],
 ];
 
 export function AsciiFire() {
@@ -42,7 +30,12 @@ export function AsciiFire() {
     >
       <pre
         aria-hidden="true"
-        style={{ color: "#ff7300", fontFamily: "monospace", margin: 0, lineHeight: 1.2 }}
+        style={{
+          color: "#ff7300",
+          fontFamily: "monospace",
+          margin: 0,
+          lineHeight: 1.2,
+        }}
       >
         {frames[frame].join("\n")}
       </pre>
